@@ -29,4 +29,4 @@ There is a function in most Prestashop themes inside product.js called
 
 	findCombination(firstTime)
 
-You need to refactor this proces to talk to the Wasabi websocket server before you can use it. Wabasi will return a JSON string with the same variables as the Prestashop combinations.
+You need to refactor this function & the data in it to talk to the Wasabi websocket server before you can use it. Wasabi will return a JSON string with the same variables as the Prestashop combinations.
