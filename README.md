@@ -9,16 +9,16 @@ Wasabi is a Websocket based tool, built using Composer &amp; Ratchet to expose d
 
 The easiest path to install is:
 
-Download this repo or git clone it
-Place into relevant Prestashop site in a subdirectory
-Run Composer in that subdirectory
+- Download this repo or git clone it
+- Place into relevant Prestashop site in a subdirectory
+- Run Composer in that subdirectory
 
 	composer install
 
-Watch as it builds in all the dependencies
-Run a background cron job to keep the index.php file running as a server
-Open port 8787 on the internal firewall if you haven't already
-Profit 
+- Watch as it builds in all the dependencies
+- Run a background cron job to keep the index.php file running as a server
+- Open port 8787 on the internal firewall if you haven't already
+- Profit 
 
 
 ## Usage
