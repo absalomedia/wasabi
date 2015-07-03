@@ -1,0 +1,24 @@
+{
+    "name": "WS/Wasabi",
+    "description": "Websocket Prestashop product combination tool",
+    "license": "GPL",
+    "keywords": ["websocket","product","combination"],
+    "authors": [
+        {
+            "name": "Lawrence Meckan",
+            "email": "media@absalom.biz"
+        }
+    ],
+    "require": {
+        "cboden/ratchet": "dev-master",
+        "simplon/mysql": "*",
+        "analog/analog": "dev-master"
+    },
+    "require-dev": {
+    },
+    "autoload": {
+        "psr-4": {
+            "WS\\Wasabi\\": "src"
+        }
+    }
+}
