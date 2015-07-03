@@ -13,7 +13,7 @@ The easiest path to install is:
 - Place into relevant Prestashop site in a subdirectory
 - Run Composer in that subdirectory
 
-	composer install
+		composer install
 
 - Watch as it builds in all the dependencies
 - Run a background cron job to keep the index.php file running as a server
