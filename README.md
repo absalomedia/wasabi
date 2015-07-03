@@ -9,16 +9,16 @@ Wasabi is a Websocket based tool, built using Composer &amp; Ratchet to expose d
 
 The easiest path to install is:
 
-	Download this repo or git clone it
-	Place into relevant Prestashop site in a subdirectory
-	Run Composer in that subdirectory
+Download this repo or git clone it
+Place into relevant Prestashop site in a subdirectory
+Run Composer in that subdirectory
 
-		$ composer install
+	composer install
 
-	Watch as it builds in all the dependencies
-	Run a background cron job to keep the index.php file running as a server
-	Open port 8787 on the internal firewall if you haven't already
-	Profit 
+Watch as it builds in all the dependencies
+Run a background cron job to keep the index.php file running as a server
+Open port 8787 on the internal firewall if you haven't already
+Profit 
 
 
 ## Usage
@@ -27,6 +27,6 @@ Wasabi is aimed at product rendering process when dealing with massive amounts o
 
 There is a function in most Prestashop themes inside product.js called
 
-	$ findCombination(firstTime)
+	findCombination(firstTime)
 
 You need to refactor this proces to talk to the Wasabi websocket server before you can use it. Wabasi will return a JSON string with the same variables as the Prestashop combinations.
