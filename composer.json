@@ -9,6 +9,8 @@
             "email": "media@absalom.biz"
         }
     ],
+    "minimum-stability": "dev",
+    "prefer-stable": "true",
     "require": {
         "cboden/ratchet": "dev-master",
         "simplon/mysql": "*",
