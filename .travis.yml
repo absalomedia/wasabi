@@ -1,38 +1,21 @@
-# see http://about.travis-ci.org/docs/user/languages/php/ for more hints
 language: php
-
-# list any PHP version you want to test against
+ 
 php:
-  # using major version aliases
-
-  # aliased to 5.2.17
-  - 5.2
-  # aliased to 5.3.29
   - 5.3
-  # aliased to a recent 5.4.x version
   - 5.4
-  # aliased to a recent 5.5.x version
   - 5.5
-  # aliased to a recent 5.6.x version
   - 5.6
-  # aliased to a recent 7.x version
   - 7.0
-  # aliased to a recent hhvm version
   - hhvm
-
-matrix:
-  allow_failures:
-    - php: 7.0
-
+ 
+install:
+  - composer require satooshi/php-coveralls:~0.6@stable
+ 
 before_script:
-  - curl -s http://getcomposer.org/installer | php
-  - php composer.phar install --dev --no-interaction
-
-script:
   - mkdir -p build/logs
-  - php vendor/bin/phpunit -c phpunit.xml.dist
-
-after_script:
-  - php vendor/bin/coveralls
-  # or enable logging
-  - php vendor/bin/coveralls -v
+ 
+script:
+  - phpunit --coverage-clover build/logs/clover.xml
+ 
+after_success:
+  - sh -c 'if [ "$TRAVIS_PHP_VERSION" != "hhvm" ]; then php vendor/bin/coveralls -v; fi;'
