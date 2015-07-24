@@ -1,6 +1,8 @@
 # Wasabi
 A Websocket loosely coupled tool for Prestashop products &amp; combinations
 
+[![Code Climate](https://codeclimate.com/github/absalomedia/wasabi/badges/gpa.svg)](https://codeclimate.com/github/absalomedia/wasabi)
+
 ## What's Wasabi?
 
 Wasabi is a Websocket based tool, built using Composer &amp; Ratchet to expose data on a Prestashop ecommerce build. It's very alpha as well so expect gremlins but not dragons. Mostly tested with 1.5.x builds but also experimentally tested with 1.6.x. It's somewhat PSR-4 compliant as well.
