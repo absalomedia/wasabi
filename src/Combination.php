@@ -58,7 +58,7 @@ class Combination implements MessageComponentInterface {
             // $client->send($id_product_attribute);
             Analog::log ("Product combination: $id_product_attribute");
 
-           $combo_goups = $this->getCombination($id_product_attribute);
+            $combo_goups = $this->getCombination($id_product_attribute);
 
             if (is_array($combo_groups) && $combo_groups)
             {
@@ -120,18 +120,9 @@ class Combination implements MessageComponentInterface {
                     $combinations[$row['id_product_attribute']]['available_date'] = '';
 
 
-                $sql = 'SELECT pai.`id_image`as image
-                        FROM `'._DB_PREFIX_.'product_attribute_image` pai
-                        LEFT JOIN `'._DB_PREFIX_.'image_lang` il ON (il.`id_image` = pai.`id_image`)
-                        LEFT JOIN `'._DB_PREFIX_.'image` i ON (i.`id_image` = pai.`id_image`)
-                        WHERE pai.`id_product_attribute` = '.(int)$id_product_attribute. ' ORDER by i.`position`';
-                 $image = $this->dbConn->fetchColumn($sql);
-                 if ($image != false) {
-                    $combinations[$row['id_product_attribute']]['image'] = (int)$image;
-                 } else {
-                    $combinations[$row['id_product_attribute']]['image'] = -1;
-                 }
+                $combinations[$row['id_product_attribute']]['image'] = $this->getComboImage($id_product_attribute);
 
+                
             }   
 
         }
@@ -192,6 +183,20 @@ class Combination implements MessageComponentInterface {
         return $combo_groups;
     }
 
+
+    public function getComboImage(($id_product_attribute) {     
+                $sql = 'SELECT pai.`id_image`as image
+                        FROM `'._DB_PREFIX_.'product_attribute_image` pai
+                        LEFT JOIN `'._DB_PREFIX_.'image_lang` il ON (il.`id_image` = pai.`id_image`)
+                        LEFT JOIN `'._DB_PREFIX_.'image` i ON (i.`id_image` = pai.`id_image`)
+                        WHERE pai.`id_product_attribute` = '.(int)$id_product_attribute. ' ORDER by i.`position`';
+                 $image = $this->dbConn->fetchColumn($sql);
+                 if ($image != false) {
+                    return (int)$image;
+                 } else {
+                    return -1;
+                 }
+    }
 
 
     public function onClose(ConnectionInterface $conn) {
