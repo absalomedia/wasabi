@@ -4,16 +4,13 @@ use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
 use Analog\Analog;
 
-if(@include "config/settings.inc.php") 
-  $triplepath = "./";
-else if (@include "../config/settings.inc.php")
-  $triplepath = "../";
-else if (@include "../../config/settings.inc.php")
-  $triplepath = "../../";
-else if (include "../../../config/settings.inc.php")
-  $triplepath = "../../../";
-else
-  die( "<p><b>Unable to find Prestashop config file. Please rectify.</b>");
+$filename = $root.'/config/settings.inc.php';
+
+if (file_exists($filename)) {
+    include $filename;
+} else {
+    trigger_error("Unable to find Prestashop config file. Please rectify", E_USER_ERROR);
+}
 
 
 class Product implements MessageComponentInterface {
