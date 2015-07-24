@@ -11,10 +11,10 @@ use Ratchet\Http\HttpServer;
 use Ratchet\Server\IoServer;
 use WS\Wasabi\Combination;
 
-    $ws = new WsServer(new Combination);
-    $ws->disableVersion(0); // old, bad, protocol version
-    $ws->setEncodingChecks(false);
+    $wasabi = new WsServer(new Combination);
+    $wasabi->disableVersion(0); // old, bad, protocol version
+    $wasabi->setEncodingChecks(false);
 
     // Make sure you're running this as root
-    $server = IoServer::factory(new HttpServer($ws), 8787,  '0.0.0.0');
+    $server = IoServer::factory(new HttpServer($wasabi), 8787,  '0.0.0.0');
     $server->run();
