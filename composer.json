@@ -14,9 +14,6 @@
         "simplon/mysql": "*",
         "analog/analog": "dev-master"
     },
-    "require-dev": { 
-        "codeclimate/php-test-reporter": "dev-master" 
-    },
     "autoload": {
         "psr-4": {
             "WS\\Wasabi\\": "src"
