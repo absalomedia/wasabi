@@ -4,14 +4,15 @@ use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
 use Analog\Analog;
 
-if(@include "config/settings.inc.php") 
-  $triplepath = "./";
-else if (@include "../config/settings.inc.php")
-  $triplepath = "../";
-else if (@include "../../config/settings.inc.php")
-  $triplepath = "../../";
-else
-  die( "<p><b>Unable to find Prestashop config file. Please rectify.\n");
+$root = realpath($_SERVER["DOCUMENT_ROOT"]);
+
+$filename = $root.'/config/settings.inc.php';
+
+if (file_exists($filename)) {
+    include $filename;
+} else {
+    trigger_error("Unable to find Prestashop config file. Please rectify", E_USER_ERROR);
+}
 
 
 class Combination implements MessageComponentInterface {
@@ -101,7 +102,7 @@ class Combination implements MessageComponentInterface {
 
             if (is_array($combo_groups) && $combo_groups)
             {
-            $combination_prices_set = array();
+            $combinationSet = array();
             foreach ($combo_groups as $k => $row)
             {
 
@@ -110,7 +111,7 @@ class Combination implements MessageComponentInterface {
                 $combinations[$row['id_product_attribute']]['price'] = (float)$row['price'];
 
                 // Call getPriceStatic in order to set $combination_specific_price
-                if (!isset($combination_prices_set[(int)$row['id_product_attribute']]))
+                if (!isset($combinationSet[(int)$row['id_product_attribute']]))
                 {
 
                     $sql = 'SELECT COUNT(*) FROM '._DB_PREFIX_.'specific_price WHERE id_product_attribute = '.(int)$id_product_attribute;
