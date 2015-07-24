@@ -9,15 +9,10 @@
             "email": "media@absalom.biz"
         }
     ],
-    "minimum-stability": "dev",
-    "prefer-stable": "true",
     "require": {
         "cboden/ratchet": "dev-master",
         "simplon/mysql": "*",
         "analog/analog": "dev-master"
-    },
-    "require-dev": {
-        "satooshi/php-coveralls": "dev-master"
     },
     "autoload": {
         "psr-4": {
