@@ -50,55 +50,15 @@ class Combination implements MessageComponentInterface {
             $vars = explode(',', $msg);
 
             Analog::log ("Product variables: $msg");
-
             $choices = array_slice($vars, 1);
-
            // echo '<pre>',print_r($choices,1),'</pre>';
 
-
-            // Find combination
-            $sql = 'SELECT pac.id_product_attribute from '._DB_PREFIX_.'product_attribute_combination as pac
-                LEFT JOIN  '._DB_PREFIX_.'product_attribute as ppa on ppa.id_product_attribute = pac.id_product_attribute
-                LEFT JOIN `'._DB_PREFIX_.'attribute` a ON (a.`id_attribute` = pac.`id_attribute`)
-                WHERE ppa.id_product = '.$product;
-             foreach ($choices as $value) {
-            $sql .= ' AND pac.id_product_attribute IN
-                    ( SELECT pac.id_product_attribute from '._DB_PREFIX_.'product_attribute_combination as pac
-                    WHERE pac.id_attribute = '.(int)$value.')  ';
-                    }
-            $sql .= ' GROUP BY pac.id_product_attribute';
-
-            // echo $sql."\n";
-
-            $id_product_attribute = $this->dbConn->fetchColumn($sql);
+            $id_product_attribute = $this->getAttribute($product,$choices);
         
             // $client->send($id_product_attribute);
             Analog::log ("Product combination: $id_product_attribute");
 
-            $sql = 'SELECT ag.`id_attribute_group`, ag.`is_color_group`, agl.`name` AS group_name, agl.`public_name` AS public_group_name,
-                    a.`id_attribute`, al.`name` AS attribute_name, a.`color` AS attribute_color, product_attribute_shop.`id_product_attribute`,
-                    IFNULL(stock.quantity, 0) as quantity, product_attribute_shop.`price`, product_attribute_shop.`ecotax`, product_attribute_shop.`weight`,
-                    product_attribute_shop.`default_on`, pa.`reference`, product_attribute_shop.`unit_price_impact`,
-                    product_attribute_shop.`minimal_quantity`, product_attribute_shop.`available_date`, ag.`group_type`
-                FROM `'._DB_PREFIX_.'product_attribute` pa
-                 INNER JOIN '._DB_PREFIX_.'product_attribute_shop product_attribute_shop
-                    ON (product_attribute_shop.id_product_attribute = pa.id_product_attribute AND product_attribute_shop.id_shop = 1)
-                 LEFT JOIN '._DB_PREFIX_.'stock_available stock
-                        ON (stock.id_product = pa.id_product AND stock.id_product_attribute = IFNULL(`pa`.id_product_attribute, 0) AND stock.id_shop = 1  )
-                LEFT JOIN `'._DB_PREFIX_.'product_attribute_combination` pac ON (pac.`id_product_attribute` = pa.`id_product_attribute`)
-                LEFT JOIN `'._DB_PREFIX_.'attribute` a ON (a.`id_attribute` = pac.`id_attribute`)
-                LEFT JOIN `'._DB_PREFIX_.'attribute_group` ag ON (ag.`id_attribute_group` = a.`id_attribute_group`)
-                LEFT JOIN `'._DB_PREFIX_.'attribute_lang` al ON (a.`id_attribute` = al.`id_attribute`)
-                LEFT JOIN `'._DB_PREFIX_.'attribute_group_lang` agl ON (ag.`id_attribute_group` = agl.`id_attribute_group`)
-                 INNER JOIN '._DB_PREFIX_.'attribute_shop attribute_shop
-                    ON (attribute_shop.id_attribute = a.id_attribute AND attribute_shop.id_shop = 1)
-                WHERE product_attribute_shop.`id_product_attribute`= '.(int)$id_product_attribute.'
-                GROUP BY id_attribute_group, id_product_attribute
-                ORDER BY ag.`position` ASC, a.`position` ASC, agl.`name` ASC';
-
-
-            $combo_groups = $this->dbConn->fetchRowMany($sql);
-
+           $combo_goups = $this->getCombination($id_product_attribute);
 
             if (is_array($combo_groups) && $combo_groups)
             {
@@ -187,6 +147,52 @@ class Combination implements MessageComponentInterface {
         }
 
     }
+
+    public function getAttribute($product, $choices) {
+            $sql = 'SELECT pac.id_product_attribute from '._DB_PREFIX_.'product_attribute_combination as pac
+                LEFT JOIN  '._DB_PREFIX_.'product_attribute as ppa on ppa.id_product_attribute = pac.id_product_attribute
+                LEFT JOIN `'._DB_PREFIX_.'attribute` a ON (a.`id_attribute` = pac.`id_attribute`)
+                WHERE ppa.id_product = '.$product;
+             foreach ($choices as $value) {
+            $sql .= ' AND pac.id_product_attribute IN
+                    ( SELECT pac.id_product_attribute from '._DB_PREFIX_.'product_attribute_combination as pac
+                    WHERE pac.id_attribute = '.(int)$value.')  ';
+                    }
+            $sql .= ' GROUP BY pac.id_product_attribute';
+            $id_product_attribute = $this->dbConn->fetchColumn($sql);
+
+        return $id_product_attribute;
+    }
+
+    public function getCombination($id_product_attribute) {
+             $sql = 'SELECT ag.`id_attribute_group`, ag.`is_color_group`, agl.`name` AS group_name, agl.`public_name` AS public_group_name,
+                    a.`id_attribute`, al.`name` AS attribute_name, a.`color` AS attribute_color, product_attribute_shop.`id_product_attribute`,
+                    IFNULL(stock.quantity, 0) as quantity, product_attribute_shop.`price`, product_attribute_shop.`ecotax`, product_attribute_shop.`weight`,
+                    product_attribute_shop.`default_on`, pa.`reference`, product_attribute_shop.`unit_price_impact`,
+                    product_attribute_shop.`minimal_quantity`, product_attribute_shop.`available_date`, ag.`group_type`
+                FROM `'._DB_PREFIX_.'product_attribute` pa
+                 INNER JOIN '._DB_PREFIX_.'product_attribute_shop product_attribute_shop
+                    ON (product_attribute_shop.id_product_attribute = pa.id_product_attribute AND product_attribute_shop.id_shop = 1)
+                 LEFT JOIN '._DB_PREFIX_.'stock_available stock
+                        ON (stock.id_product = pa.id_product AND stock.id_product_attribute = IFNULL(`pa`.id_product_attribute, 0) AND stock.id_shop = 1  )
+                LEFT JOIN `'._DB_PREFIX_.'product_attribute_combination` pac ON (pac.`id_product_attribute` = pa.`id_product_attribute`)
+                LEFT JOIN `'._DB_PREFIX_.'attribute` a ON (a.`id_attribute` = pac.`id_attribute`)
+                LEFT JOIN `'._DB_PREFIX_.'attribute_group` ag ON (ag.`id_attribute_group` = a.`id_attribute_group`)
+                LEFT JOIN `'._DB_PREFIX_.'attribute_lang` al ON (a.`id_attribute` = al.`id_attribute`)
+                LEFT JOIN `'._DB_PREFIX_.'attribute_group_lang` agl ON (ag.`id_attribute_group` = agl.`id_attribute_group`)
+                 INNER JOIN '._DB_PREFIX_.'attribute_shop attribute_shop
+                    ON (attribute_shop.id_attribute = a.id_attribute AND attribute_shop.id_shop = 1)
+                WHERE product_attribute_shop.`id_product_attribute`= '.(int)$id_product_attribute.'
+                GROUP BY id_attribute_group, id_product_attribute
+                ORDER BY ag.`position` ASC, a.`position` ASC, agl.`name` ASC';
+
+
+            $combo_groups = $this->dbConn->fetchRowMany($sql);
+
+        return $combo_groups;
+    }
+
+
 
     public function onClose(ConnectionInterface $conn) {
         // The connection is closed, remove it, as we can no longer send it messages
