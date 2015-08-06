@@ -184,7 +184,7 @@ class Combination implements MessageComponentInterface {
     }
 
 
-    public function getComboImage(($id_product_attribute) {     
+    public function getComboImage($id_product_attribute) {     
                 $sql = 'SELECT pai.`id_image`as image
                         FROM `'._DB_PREFIX_.'product_attribute_image` pai
                         LEFT JOIN `'._DB_PREFIX_.'image_lang` il ON (il.`id_image` = pai.`id_image`)
