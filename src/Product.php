@@ -62,9 +62,6 @@ class Product implements MessageComponentInterface {
 
             // The sender is not the receiver, send to each client connected
             //   $client->send($id_product_attribute);
-            }
-        }
-
     }
 
     public function onClose(ConnectionInterface $conn) {
