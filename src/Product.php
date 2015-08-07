@@ -4,7 +4,7 @@ use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
 use Analog\Analog;
 
-$filename = dirname(__FILE__).'/../config/config.inc.php';
+$filename = dirname(__FILE__).'/../../config/config.inc.php';
 
 if (file_exists($filename)) {
     include $filename;
