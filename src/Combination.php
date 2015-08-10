@@ -71,37 +71,7 @@ class Combination implements MessageComponentInterface {
                 // Call getPriceStatic in order to set $combination_specific_price
                 if (!isset($combinationSet[(int)$row['id_product_attribute']]))
                 {
-
-                    $sql = 'SELECT COUNT(*) FROM '._DB_PREFIX_.'specific_price WHERE id_product_attribute = '.(int)$id_product_attribute;
-                    $spec = $this->dbConn->fetchColumn($sql);
-
-                    if ($spec > 0) {
-
-                        $now = date('Y-m-d H:i:s');
-                        $query = 'SELECT * FROM `'._DB_PREFIX_.'specific_price`
-                            WHERE `id_product_attribute` IN (0, '.(int)$id_product_attribute.')
-                            AND (
-                                   (`from` = \'0000-00-00 00:00:00\' OR \''.$now.'\' >= `from`)
-                            AND
-                                     (`to` = \'0000-00-00 00:00:00\' OR \''.$now.'\' <= `to`)
-                            ) ';
-
-                         $query .= ' ORDER BY `id_product_attribute` DESC, `from_quantity` DESC, `id_specific_price_rule` ASC';
-            
-                        $result = $this->dbConn->fetchRow($query);
-
-                      $specific_price['price'] = $result['price'];
-                      $specific_price['id_product_attribute'] = $result['id_product_attribute'];
-                      $specific_price['reduction_percent'] = (int) 100 * $result['reduction'];
-                      $specific_price['reduction_price'] = 0;
-                      $specific_price['reduction_type'] = $result['reduction_type'];
-                    } else { 
-                      $specific_price['price'] = 0;
-                      $specific_price['id_product_attribute'] = 0;
-                      $specific_price['reduction_percent'] = 0;
-                      $specific_price['reduction_price'] = 0;
-                      $specific_price['reduction_type'] = '';
-                    }
+                   $specific_price = getSpecificPrice($id_product_attribute);
                    $combination_prices_set[(int)$row['id_product_attribute']] = true;
                    $combinations[$row['id_product_attribute']]['specific_price'] = $specific_price;
                 }
@@ -181,6 +151,40 @@ class Combination implements MessageComponentInterface {
         return $combo_groups;
     }
 
+
+    public function getSpecificPrice($id_product_attribute) {
+                    $sql = 'SELECT COUNT(*) FROM '._DB_PREFIX_.'specific_price WHERE id_product_attribute = '.(int)$id_product_attribute;
+                    $spec = $this->dbConn->fetchColumn($sql);
+
+                    if ($spec > 0) {
+
+                        $now = date('Y-m-d H:i:s');
+                        $query = 'SELECT * FROM `'._DB_PREFIX_.'specific_price`
+                            WHERE `id_product_attribute` IN (0, '.(int)$id_product_attribute.')
+                            AND (
+                                   (`from` = \'0000-00-00 00:00:00\' OR \''.$now.'\' >= `from`)
+                            AND
+                                     (`to` = \'0000-00-00 00:00:00\' OR \''.$now.'\' <= `to`)
+                            ) ';
+
+                         $query .= ' ORDER BY `id_product_attribute` DESC, `from_quantity` DESC, `id_specific_price_rule` ASC';
+            
+                        $result = $this->dbConn->fetchRow($query);
+
+                      $specific_price['price'] = $result['price'];
+                      $specific_price['id_product_attribute'] = $result['id_product_attribute'];
+                      $specific_price['reduction_percent'] = (int) 100 * $result['reduction'];
+                      $specific_price['reduction_price'] = 0;
+                      $specific_price['reduction_type'] = $result['reduction_type'];
+                    } else { 
+                      $specific_price['price'] = 0;
+                      $specific_price['id_product_attribute'] = 0;
+                      $specific_price['reduction_percent'] = 0;
+                      $specific_price['reduction_price'] = 0;
+                      $specific_price['reduction_type'] = '';
+                    }
+            return $specific_price;
+    }
 
     public function getComboImage($id_product_attribute) {     
                 $sql = 'SELECT pai.`id_image`as image
