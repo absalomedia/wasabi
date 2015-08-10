@@ -39,31 +39,21 @@ class Combination implements MessageComponentInterface {
     }
 
     public function onMessage(ConnectionInterface $from, $msg) {
-            
+         
         foreach ($this->clients as $client) {
-
             if ($from == $client) {
-
             $product = substr($msg, 0, strpos($msg, ','));
             $vars = explode(',', $msg);
-
             Analog::log ("Product variables: $msg");
             $choices = array_slice($vars, 1);
-           // echo '<pre>',print_r($choices,1),'</pre>';
-
-            $id_product_attribute = $this->getAttribute($product,$choices);
-        
+            $id_product_attribute = $this->getAttribute($product,$choices);      
             // $client->send($id_product_attribute);
             Analog::log ("Product combination: $id_product_attribute");
-
             $combo_goups = $this->getCombination($id_product_attribute);
-
-            if (is_array($combo_groups) && $combo_groups)
-            {
+            if (is_array($combo_groups) && $combo_groups) {
             $combinationSet = array();
             foreach ($combo_groups as $k => $row)
             {
-
                 $combinations[$row['id_product_attribute']]['attributes_values'][$row['id_attribute_group']] = $row['attribute_name'];
                 $combinations[$row['id_product_attribute']]['attributes'][] = (int)$row['id_attribute'];
                 $combinations[$row['id_product_attribute']]['price'] = (float)$row['price'];
@@ -75,7 +65,6 @@ class Combination implements MessageComponentInterface {
                    $combination_prices_set[(int)$row['id_product_attribute']] = true;
                    $combinations[$row['id_product_attribute']]['specific_price'] = $specific_price;
                 }
-
                 $combinations[$row['id_product_attribute']]['ecotax'] = (float)$row['ecotax'];
                 $combinations[$row['id_product_attribute']]['weight'] = (float)$row['weight'];
                 $combinations[$row['id_product_attribute']]['quantity'] = (int)$row['quantity'];
@@ -86,22 +75,11 @@ class Combination implements MessageComponentInterface {
                     $combinations[$row['id_product_attribute']]['available_date'] = $row['available_date'];
                 else
                     $combinations[$row['id_product_attribute']]['available_date'] = '';
-
-
-                $combinations[$row['id_product_attribute']]['image'] = $this->getComboImage($id_product_attribute);
-
-                
+                $combinations[$row['id_product_attribute']]['image'] = $this->getComboImage($id_product_attribute);               
             }   
 
         }
-
-            // Analog::log ("Combination: ".json_encode($combinations)." \n");
-
-            // Basic test - fire the correct combination back via Websocket
             $client->send(json_encode($combinations));
-
-            // The sender is not the receiver, send to each client connected
-            //   $client->send($id_product_attribute);
             }
         }
 
@@ -153,9 +131,7 @@ class Combination implements MessageComponentInterface {
 
 
     private function getSpecificPrice($id_product_attribute) {
-                    $sql = 'SELECT COUNT(*) FROM '._DB_PREFIX_.'specific_price WHERE id_product_attribute = '.(int)$id_product_attribute;
-                    $spec = $this->dbConn->fetchColumn($sql);
-                    if ($spec > 0) {
+                    if (getNumberSpecificPrice($id_product_attribute) > 0) {
                       $now = date('Y-m-d H:i:s');
                       $result = getSpecificPriceData($id_product_attribute, $now);
                       $specific_price['price'] = $result['price'];
@@ -187,6 +163,13 @@ class Combination implements MessageComponentInterface {
            $result = $this->dbConn->fetchRow($query);
         return $result;
 
+    }
+
+
+    private function getNumberSpecificPrice($id_product_attribute) {
+            $sql = 'SELECT COUNT(*) FROM '._DB_PREFIX_.'specific_price WHERE id_product_attribute = '.(int)$id_product_attribute;
+            $spec = $this->dbConn->fetchColumn($sql);
+            return $spec;
     }
 
 
