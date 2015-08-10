@@ -107,7 +107,7 @@ class Combination implements MessageComponentInterface {
 
     }
 
-    public function getAttribute($product, $choices) {
+    private function getAttribute($product, $choices) {
             $sql = 'SELECT pac.id_product_attribute from '._DB_PREFIX_.'product_attribute_combination as pac
                 LEFT JOIN  '._DB_PREFIX_.'product_attribute as ppa on ppa.id_product_attribute = pac.id_product_attribute
                 LEFT JOIN `'._DB_PREFIX_.'attribute` a ON (a.`id_attribute` = pac.`id_attribute`)
@@ -123,7 +123,7 @@ class Combination implements MessageComponentInterface {
         return $id_product_attribute;
     }
 
-    public function getCombination($id_product_attribute) {
+    private function getCombination($id_product_attribute) {
              $sql = 'SELECT ag.`id_attribute_group`, ag.`is_color_group`, agl.`name` AS group_name, agl.`public_name` AS public_group_name,
                     a.`id_attribute`, al.`name` AS attribute_name, a.`color` AS attribute_color, product_attribute_shop.`id_product_attribute`,
                     IFNULL(stock.quantity, 0) as quantity, product_attribute_shop.`price`, product_attribute_shop.`ecotax`, product_attribute_shop.`weight`,
@@ -152,25 +152,12 @@ class Combination implements MessageComponentInterface {
     }
 
 
-    public function getSpecificPrice($id_product_attribute) {
+    private function getSpecificPrice($id_product_attribute) {
                     $sql = 'SELECT COUNT(*) FROM '._DB_PREFIX_.'specific_price WHERE id_product_attribute = '.(int)$id_product_attribute;
                     $spec = $this->dbConn->fetchColumn($sql);
-
                     if ($spec > 0) {
-
-                        $now = date('Y-m-d H:i:s');
-                        $query = 'SELECT * FROM `'._DB_PREFIX_.'specific_price`
-                            WHERE `id_product_attribute` IN (0, '.(int)$id_product_attribute.')
-                            AND (
-                                   (`from` = \'0000-00-00 00:00:00\' OR \''.$now.'\' >= `from`)
-                            AND
-                                     (`to` = \'0000-00-00 00:00:00\' OR \''.$now.'\' <= `to`)
-                            ) ';
-
-                         $query .= ' ORDER BY `id_product_attribute` DESC, `from_quantity` DESC, `id_specific_price_rule` ASC';
-            
-                        $result = $this->dbConn->fetchRow($query);
-
+                      $now = date('Y-m-d H:i:s');
+                      $result = getSpecificPriceData($id_product_attribute, $now);
                       $specific_price['price'] = $result['price'];
                       $specific_price['id_product_attribute'] = $result['id_product_attribute'];
                       $specific_price['reduction_percent'] = (int) 100 * $result['reduction'];
@@ -186,7 +173,24 @@ class Combination implements MessageComponentInterface {
             return $specific_price;
     }
 
-    public function getComboImage($id_product_attribute) {     
+    private function getSpecificPriceData($id_product_attribute, $now) {
+            $query = 'SELECT * FROM `'._DB_PREFIX_.'specific_price`
+                            WHERE `id_product_attribute` IN (0, '.(int)$id_product_attribute.')
+                            AND (
+                                   (`from` = \'0000-00-00 00:00:00\' OR \''.$now.'\' >= `from`)
+                            AND
+                                     (`to` = \'0000-00-00 00:00:00\' OR \''.$now.'\' <= `to`)
+                            ) ';
+
+            $query .= ' ORDER BY `id_product_attribute` DESC, `from_quantity` DESC, `id_specific_price_rule` ASC';
+            
+           $result = $this->dbConn->fetchRow($query);
+        return $result;
+
+    }
+
+
+    private function getComboImage($id_product_attribute) {     
                 $sql = 'SELECT pai.`id_image`as image
                         FROM `'._DB_PREFIX_.'product_attribute_image` pai
                         LEFT JOIN `'._DB_PREFIX_.'image_lang` il ON (il.`id_image` = pai.`id_image`)
