@@ -14,8 +14,7 @@
         "simplon/mysql": "*",
         "analog/analog": "dev-master"
     },
-    "require-dev": {
-        "phpunit/phpunit": "4.0.*"
+    "require-dev": { "codeclimate/php-test-reporter": "dev-master" 
     },
     "autoload": {
         "psr-4": {
