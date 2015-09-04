@@ -54,28 +54,7 @@ class Combination implements MessageComponentInterface {
             $combinationSet = array();
             foreach ($combo_groups as $k => $row)
             {
-                $combinations[$row['id_product_attribute']]['attributes_values'][$row['id_attribute_group']] = $row['attribute_name'];
-                $combinations[$row['id_product_attribute']]['attributes'][] = (int)$row['id_attribute'];
-                $combinations[$row['id_product_attribute']]['price'] = (float)$row['price'];
-
-                // Call getPriceStatic in order to set $combination_specific_price
-                if (!isset($combinationSet[(int)$row['id_product_attribute']]))
-                {
-                   $specific_price = getSpecificPrice($id_product_attribute);
-                   $combination_prices_set[(int)$row['id_product_attribute']] = true;
-                   $combinations[$row['id_product_attribute']]['specific_price'] = $specific_price;
-                }
-                $combinations[$row['id_product_attribute']]['ecotax'] = (float)$row['ecotax'];
-                $combinations[$row['id_product_attribute']]['weight'] = (float)$row['weight'];
-                $combinations[$row['id_product_attribute']]['quantity'] = (int)$row['quantity'];
-                $combinations[$row['id_product_attribute']]['reference'] = $row['reference'];
-                $combinations[$row['id_product_attribute']]['unit_impact'] = $row['unit_price_impact'];
-                $combinations[$row['id_product_attribute']]['minimal_quantity'] = $row['minimal_quantity'];
-                if ($row['available_date'] != '0000-00-00')
-                    $combinations[$row['id_product_attribute']]['available_date'] = $row['available_date'];
-                else
-                    $combinations[$row['id_product_attribute']]['available_date'] = '';
-                $combinations[$row['id_product_attribute']]['image'] = $this->getComboImage($id_product_attribute);               
+                $combinations = $this->buildAttributes($id_product_attribute,$row);        
             }   
 
         }
@@ -100,6 +79,35 @@ class Combination implements MessageComponentInterface {
 
         return $id_product_attribute;
     }
+
+    private function buildAttributes($id_product_attribute,$row) {
+                $combinations[$row['id_product_attribute']]['attributes_values'][$row['id_attribute_group']] = $row['attribute_name'];
+                $combinations[$row['id_product_attribute']]['attributes'][] = (int)$row['id_attribute'];
+                $combinations[$row['id_product_attribute']]['price'] = (float)$row['price'];
+
+                // Call getPriceStatic in order to set $combination_specific_price
+                if (!isset($combinationSet[(int)$row['id_product_attribute']]))
+                {
+                   $specific_price = getSpecificPrice($id_product_attribute);
+                   $combinationSet[(int)$row['id_product_attribute']] = true;
+                   $combinations[$row['id_product_attribute']]['specific_price'] = $specific_price;
+                }
+                $combinations[$row['id_product_attribute']]['ecotax'] = (float)$row['ecotax'];
+                $combinations[$row['id_product_attribute']]['weight'] = (float)$row['weight'];
+                $combinations[$row['id_product_attribute']]['quantity'] = (int)$row['quantity'];
+                $combinations[$row['id_product_attribute']]['reference'] = $row['reference'];
+                $combinations[$row['id_product_attribute']]['unit_impact'] = $row['unit_price_impact'];
+                $combinations[$row['id_product_attribute']]['minimal_quantity'] = $row['minimal_quantity'];
+                if ($row['available_date'] != '0000-00-00')
+                    $combinations[$row['id_product_attribute']]['available_date'] = $row['available_date'];
+                else
+                    $combinations[$row['id_product_attribute']]['available_date'] = '';
+                $combinations[$row['id_product_attribute']]['image'] = getComboImage($id_product_attribute);
+
+        return $combinations;   
+
+    }
+
 
     private function getCombination($id_product_attribute) {
              $sql = 'SELECT ag.`id_attribute_group`, ag.`is_color_group`, agl.`name` AS group_name, agl.`public_name` AS public_group_name,
@@ -132,8 +140,7 @@ class Combination implements MessageComponentInterface {
 
     private function getSpecificPrice($id_product_attribute) {
                     if (getNumberSpecificPrice($id_product_attribute) > 0) {
-                      $now = date('Y-m-d H:i:s');
-                      $result = getSpecificPriceData($id_product_attribute, $now);
+                      $result = getSpecificPriceData($id_product_attribute, date('Y-m-d H:i:s'));
                       $specific_price['price'] = $result['price'];
                       $specific_price['id_product_attribute'] = $result['id_product_attribute'];
                       $specific_price['reduction_percent'] = (int) 100 * $result['reduction'];
