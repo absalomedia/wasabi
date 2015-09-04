@@ -146,14 +146,12 @@ class Combination implements MessageComponentInterface {
                       $specific_price['reduction_percent'] = (int) 100 * $result['reduction'];
                       $specific_price['reduction_price'] = 0;
                       $specific_price['reduction_type'] = $result['reduction_type'];
-                    } else { 
-                      $specific_price['price'] = 0;
-                      $specific_price['id_product_attribute'] = 0;
-                      $specific_price['reduction_percent'] = 0;
-                      $specific_price['reduction_price'] = 0;
-                      $specific_price['reduction_type'] = '';
+
+                      return $specific_price;
+                    } else {
+                      return null;  
                     }
-            return $specific_price;
+
     }
 
     private function getSpecificPriceData($id_product_attribute, $now) {
