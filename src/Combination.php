@@ -105,17 +105,20 @@ class Combination implements MessageComponentInterface {
                 if ($row['available_date'] != '0000-00-00') {
                     $combinations[$row['id_product_attribute']]['available_date'] = $row['available_date'];
                 }
-                $combinations[$row['id_product_attribute']]['image'] = getComboImage($id_product_attribute);
-                
-                if ( $specific_price['price'] != 0) {
-                    $combinations[$row['id_product_attribute']]['final_price'] = ( ( (float)$row['base_price'] + (float)$row['price'] ) * ( ((int) 100 - $specific_price['reduction_percent']) / 100) );
-                } else {
-                    $combinations[$row['id_product_attribute']]['final_price'] = (float)$row['base_price'] + (float)$row['price'];      
-                }
-
+                $combinations[$row['id_product_attribute']]['image'] = getComboImage($id_product_attribute);          
+                $combinations[$row['id_product_attribute']]['final_price'] = getFinalPrice($row, $specfic_price);
 
         return $combinations;   
 
+    }
+
+    private function getFinalPrice($row, $specfic_price) {
+         if ( $specific_price['price'] != 0) {
+                    $final_price = ( ( (float)$row['base_price'] + (float)$row['price'] ) * ( ((int) 100 - $specific_price['reduction_percent']) / 100) );
+                } else {
+                    $final_price = (float)$row['base_price'] + (float)$row['price'];      
+         }
+         return $final_price;
     }
 
 
