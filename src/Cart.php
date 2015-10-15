@@ -1,4 +1,5 @@
 <?php
+
 namespace WS\Wasabi;
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
