@@ -81,14 +81,17 @@ class Combination implements MessageComponentInterface {
     }
 
     private function buildAttributes($id_product_attribute,$row) {
+                $combinations[$row['id_product_attribute']]['id_product'] = (int)$row['id_product'];
+                $combinations[$row['id_product_attribute']]['name'] = $row['product_name'];
                 $combinations[$row['id_product_attribute']]['attributes_values'][$row['id_attribute_group']] = $row['attribute_name'];
                 $combinations[$row['id_product_attribute']]['attributes'][] = (int)$row['id_attribute'];
+                $combinations[$row['id_product_attribute']]['base_price'] = (float)$row['base_price'];
                 $combinations[$row['id_product_attribute']]['price'] = (float)$row['price'];
 
                 // Call getPriceStatic in order to set $combination_specific_price
                 if (!isset($combinationSet[(int)$row['id_product_attribute']]))
                 {
-                   $specific_price = getSpecificPrice($id_product_attribute);
+                   $specific_price = getSpecificPrice($id_product_attribute, $row['id_product']);
                    $combinationSet[(int)$row['id_product_attribute']] = true;
                    $combinations[$row['id_product_attribute']]['specific_price'] = $specific_price;
                 }
@@ -103,6 +106,13 @@ class Combination implements MessageComponentInterface {
                     $combinations[$row['id_product_attribute']]['available_date'] = $row['available_date'];
                 }
                 $combinations[$row['id_product_attribute']]['image'] = getComboImage($id_product_attribute);
+                
+                if ( $specific_price['price'] != 0) {
+                    $combinations[$row['id_product_attribute']]['final_price'] = ( ( (float)$row['base_price'] + (float)$row['price'] ) * ( ((int) 100 - $specific_price['reduction_percent']) / 100) );
+                } else {
+                    $combinations[$row['id_product_attribute']]['final_price'] = (float)$row['base_price'] + (float)$row['price'];      
+                }
+
 
         return $combinations;   
 
@@ -138,9 +148,9 @@ class Combination implements MessageComponentInterface {
     }
 
 
-    private function getSpecificPrice($id_product_attribute) {
-                    if (getNumberSpecificPrice($id_product_attribute) > 0) {
-                      $result = getSpecificPriceData($id_product_attribute, date('Y-m-d H:i:s'));
+    private function getSpecificPrice($id_product_attribute, $id_product) {
+                    if (getNumberSpecificPrice($id_product_attribute, $id_product) > 0) {
+                      $result = getSpecificPriceData($id_product_attribute,  $id_product, date('Y-m-d H:i:s'));
                       $specific_price['price'] = $result['price'];
                       $specific_price['id_product_attribute'] = $result['id_product_attribute'];
                       $specific_price['reduction_percent'] = (int) 100 * $result['reduction'];
@@ -154,26 +164,31 @@ class Combination implements MessageComponentInterface {
 
     }
 
-    private function getSpecificPriceData($id_product_attribute, $now) {
-            $query = 'SELECT * FROM `'._DB_PREFIX_.'specific_price`
-                            WHERE `id_product_attribute` IN (0, '.(int)$id_product_attribute.')
+    private function getSpecificPriceData($id_product_attribute, $product, $now) {
+            $sql = 'SELECT * FROM `'._DB_PREFIX_.'specific_price`
+                            WWHERE `id_product` = '.(int)$id_product.'
+                            AND `id_product_attribute` IN (0, '.(int)$id_product_attribute.')
                             AND (
                                    (`from` = \'0000-00-00 00:00:00\' OR \''.$now.'\' >= `from`)
                             AND
                                      (`to` = \'0000-00-00 00:00:00\' OR \''.$now.'\' <= `to`)
                             ) ';
 
-            $query .= ' ORDER BY `id_product_attribute` DESC, `from_quantity` DESC, `id_specific_price_rule` ASC';
+            $sql .= ' ORDER BY `id_product_attribute` DESC, `from_quantity` DESC, `id_specific_price_rule` ASC';
             
-           $result = $this->dbConn->fetchRow($query);
+           $result = $this->dbConn->fetchRow($sql);
         return $result;
 
     }
 
 
-    private function getNumberSpecificPrice($id_product_attribute) {
+    private function getNumberSpecificPrice($id_product_attribute, $id_product) {
+            $sql = 'SELECT COUNT(*) FROM '._DB_PREFIX_.'specific_price WHERE id_product = '.(int)$id_product. ' AND id_product_attribute = 0';
+            $spec = $this->dbConn->fetchColumn($sql);
+            if ($spec == 0) {
             $sql = 'SELECT COUNT(*) FROM '._DB_PREFIX_.'specific_price WHERE id_product_attribute = '.(int)$id_product_attribute;
             $spec = $this->dbConn->fetchColumn($sql);
+            }
             return $spec;
     }
 
