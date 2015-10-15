@@ -112,7 +112,7 @@ class Combination implements MessageComponentInterface {
 
     }
 
-    private function getFinalPrice($row, $specfic_price) {
+    private function getFinalPrice($row, $specific_price) {
          if ( $specific_price['price'] != 0) {
                     $final_price = ( ( (float)$row['base_price'] + (float)$row['price'] ) * ( ((int) 100 - $specific_price['reduction_percent']) / 100) );
                 } else {
