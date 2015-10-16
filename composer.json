@@ -19,7 +19,7 @@
     "autoload": {
         "psr-4": {
             "WS\\Wasabi\\": "src",
-            "WS\\Prestashop":"/../../config/config.inc.php"
+            "WS\\Prestashop\\":"/../../config/config.inc.php"
         }
     }
 }
