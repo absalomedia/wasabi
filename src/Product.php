@@ -45,25 +45,75 @@ class Product implements MessageComponentInterface {
 
             if ($from == $client) {
 
-            $product = substr($msg, 0, strpos($msg, ','));
-            $vars = explode(',', $msg);
-
+            $category = (int) substr($msg, 0, strpos($msg, ','));
+            if ($category != 0) {
+                $products = $this->getProducts($category);
+            } else {
+                $product = substr($msg, strpos($msg, ",") + 1);
+                $products = $this->getProducts($product);
+            }           
             Analog::log ("Product variables: $msg");
-
-            $choices = array_slice($vars, 1);
-
             }   
 
         }
 
-            // Analog::log ("Combination: ".json_encode($combinations)." \n");
+            // Basic test - fire the correct product back via Websocket
+            $client->send(json_encode($products));
 
-            // Basic test - fire the correct combination back via Websocket
-            $client->send();
-
-            // The sender is not the receiver, send to each client connected
-            //   $client->send($id_product_attribute);
     }
+
+    public function getProducts($category)
+    {
+            $product_ids = $this->getProductIDs($category);
+            $products = $this->getProduct($product_ids);
+
+            return $products;
+    }
+
+
+    public function getProductIDs($category)
+    {
+        $sql = 'SELECT DISTINCT p.id_product
+                from '._DB_PREFIX_.'product as p
+                LEFT JOIN '._DB_PREFIX_.'image AS i ON i.id_product = p.id_product 
+                LEFT JOIN '._DB_PREFIX_.'product_lang as pl ON pl.id_product = p.id_product
+                WHERE p.active = 1
+                AND p.id_category_default = '.(int)$category.'
+                GROUP BY p.id_product';
+        $pcats = $this->dbConn->fetchRowMany($sql);
+        $ids = '';
+        foreach ($pcats as $row) {
+            $ids .= $row['id_product'].',';
+        }
+        $ids = rtrim($ids, ",");
+
+        return $ids;
+    }
+
+    public function getProduct($ids)
+    {
+        $sql = 'SELECT p.id_product, p.id_supplier, p.ean13, p.upc, p.price, p.wholesale_price, p.on_sale, p.quantity, p.id_category_default, p.show_price, p.available_for_order, p.minimal_quantity, p.customizable,
+                    p.out_of_stock, pl.`link_rewrite`, pl.`name`, i.id_image, il.legend,
+                    cl.`name` AS category_default,  cl.`id_category` AS cat_id,
+                    ps.price AS orderprice
+                    FROM '._DB_PREFIX_.'product as p                 
+                    LEFT JOIN '._DB_PREFIX_.'image AS i ON i.id_product = p.id_product 
+                    LEFT JOIN '._DB_PREFIX_.'product_shop as ps ON ps.id_product = p.id_product
+                    LEFT JOIN '._DB_PREFIX_.'product_lang as pl ON pl.id_product = p.id_product
+                    LEFT JOIN '._DB_PREFIX_.'image_lang as il ON i.id_image = il.id_image
+                    LEFT JOIN '._DB_PREFIX_.'category_lang cl ON p.id_category_default = cl.id_category
+                    WHERE p.id_product IN ('.$ids.')
+                    AND i.cover = 1
+                    AND p.active = 1
+                    GROUP BY p.id_product
+                    ORDER BY p.price ASC';
+    
+        $result = $this->dbConn->fetchRowMany($sql);
+
+        return $result;
+    }
+
+
 
     public function onClose(ConnectionInterface $conn) {
         // The connection is closed, remove it, as we can no longer send it messages
