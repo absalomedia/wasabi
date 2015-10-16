@@ -14,7 +14,7 @@ if (file_exists($filename)) {
 }
 
 
-class Product implements MessageComponentInterface {
+class Cart implements MessageComponentInterface {
 
     protected $clients;
 
