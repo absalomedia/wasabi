@@ -47,7 +47,6 @@ class Combination implements MessageComponentInterface {
             Analog::log ("Product variables: $msg");
             $choices = array_slice($vars, 1);
             $id_product_attribute = $this->getAttribute($product,$choices);      
-            // $client->send($id_product_attribute);
             Analog::log ("Product combination: $id_product_attribute");
             $combo_groups = $this->getCombination($id_product_attribute);
             if (is_array($combo_groups) && $combo_groups) {

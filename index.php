@@ -1,8 +1,5 @@
 <?php
 
-//error_reporting(E_ALL|E_STRICT);
-//ini_set( 'display_errors', 1);
-
 require 'vendor/autoload.php';
 
 // Your shell script
@@ -36,4 +33,3 @@ use WS\Wasabi\Cart;
     // Make sure you're running this as root
     $server3 = IoServer::factory(new HttpServer($wasabi3), 8789,  '0.0.0.0');
     $server3->run();
-     
