@@ -55,13 +55,9 @@ class Product implements MessageComponentInterface {
 
         }
 
-            // Analog::log ("Combination: ".json_encode($combinations)." \n");
 
             // Basic test - fire the correct combination back via Websocket
             $client->send(json_encode($otherCarts));
-
-            // The sender is not the receiver, send to each client connected
-            //   $client->send($id_product_attribute);
     }
 
 
