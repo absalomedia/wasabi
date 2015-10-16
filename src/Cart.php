@@ -5,16 +5,17 @@ use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
 use Analog\Analog;
 
-$filename = dirname(__FILE__).'/../../config/config.inc.php';
-
-if (file_exists($filename)) {
-    include $filename;
-} else {
-    trigger_error("Unable to find Prestashop config file. Please rectify", E_USER_ERROR);
-}
-
-
 class Cart implements MessageComponentInterface {
+
+    public function __autoload()) {
+    $filename = dirname(__FILE__).'/../../config/config.inc.php';
+
+    if (file_exists($filename)) {
+        include $filename;
+    } else {
+        trigger_error("Unable to find Prestashop config file. Please rectify", E_USER_ERROR);
+        }
+    }
 
     protected $clients;
 
