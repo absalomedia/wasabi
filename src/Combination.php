@@ -50,9 +50,8 @@ class Combination implements MessageComponentInterface {
             $id_product_attribute = $this->getAttribute($product,$choices);      
             // $client->send($id_product_attribute);
             Analog::log ("Product combination: $id_product_attribute");
-            $combo_goups = $this->getCombination($id_product_attribute);
+            $combo_groups = $this->getCombination($id_product_attribute);
             if (is_array($combo_groups) && $combo_groups) {
-            $combinationSet = array();
             foreach ($combo_groups as $k => $row)
             {
                 $combinations = $this->buildAttributes($id_product_attribute,$row);        
@@ -92,7 +91,7 @@ class Combination implements MessageComponentInterface {
                 // Call getPriceStatic in order to set $combination_specific_price
                 if (!isset($combinationSet[(int)$row['id_product_attribute']]))
                 {
-                   $specific_price = getSpecificPrice($id_product_attribute, $row['id_product']);
+                   $specific_price = $this->getSpecificPrice($id_product_attribute, $row['id_product']);
                    $combinationSet[(int)$row['id_product_attribute']] = true;
                    $combinations[$row['id_product_attribute']]['specific_price'] = $specific_price;
                 }
@@ -106,8 +105,8 @@ class Combination implements MessageComponentInterface {
                 if ($row['available_date'] != '0000-00-00') {
                     $combinations[$row['id_product_attribute']]['available_date'] = $row['available_date'];
                 }
-                $combinations[$row['id_product_attribute']]['image'] = getComboImage($id_product_attribute);          
-                $combinations[$row['id_product_attribute']]['final_price'] = getFinalPrice($row, $specfic_price);
+                $combinations[$row['id_product_attribute']]['image'] = $this->getComboImage($id_product_attribute);          
+                $combinations[$row['id_product_attribute']]['final_price'] = $this->getFinalPrice($row, $specfic_price);
 
         return $combinations;   
 
@@ -153,8 +152,8 @@ class Combination implements MessageComponentInterface {
 
 
     private function getSpecificPrice($id_product_attribute, $id_product) {
-                    if (getNumberSpecificPrice($id_product_attribute, $id_product) > 0) {
-                      $result = getSpecificPriceData($id_product_attribute,  $id_product, date('Y-m-d H:i:s'));
+                    if ($this->getNumberSpecificPrice($id_product_attribute, $id_product) > 0) {
+                      $result = $this->getSpecificPriceData($id_product_attribute,  $id_product, date('Y-m-d H:i:s'));
                       $specific_price['price'] = $result['price'];
                       $specific_price['id_product_attribute'] = $result['id_product_attribute'];
                       $specific_price['reduction_percent'] = (int) 100 * $result['reduction'];
