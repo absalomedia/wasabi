@@ -6,18 +6,16 @@ use Ratchet\ConnectionInterface;
 use Analog\Analog;
 
 class Cart implements MessageComponentInterface {
- 
-    private function prestaload() {
+
+    public function __autoload() {
     $filename = dirname(__FILE__).'/../../config/config.inc.php';
 
     if (file_exists($filename)) {
         include $filename;
     } else {
         trigger_error("Unable to find Prestashop config file. Please rectify", E_USER_ERROR);
-            }
+        }
     }
-
-    spl_autoload_register('prestaload');
 
     protected $clients;
 
