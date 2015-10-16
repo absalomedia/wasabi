@@ -10,11 +10,13 @@
         }
     ],
     "require": {
-        "cboden/ratchet": "dev-master",
-        "simplon/mysql": "*",
-        "analog/analog": "dev-master"
+        "simplon/mysql": "*"
+
     },
-    "require-dev": { "codeclimate/php-test-reporter": "dev-master"
+    "require-dev": {
+        "codeclimate/php-test-reporter": "dev-master",
+        "cboden/ratchet": "dev-master",
+        "analog/analog": "dev-master"
     },
     "autoload": {
         "psr-4": {
