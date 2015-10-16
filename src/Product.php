@@ -27,7 +27,6 @@ class Product implements MessageComponentInterface {
     _DB_PASSWD_,
     _DB_NAME_
         );
-        $sqlManager = new \Simplon\Mysql\Manager\SqlManager($this->dbConn);
         $log_file = 'ws-prod.log';
         Analog::handler (\Analog\Handler\File::init ($log_file));
     }

@@ -21,7 +21,6 @@ use WS\Wasabi\Cart;
     $server = IoServer::factory(new HttpServer($wasabi), 8787,  '0.0.0.0');
     $server->run();
 
-
     $wasabi2 = new WsServer(new Product);
     $wasabi2->disableVersion(0); // old, bad, protocol version
     $wasabi2->setEncodingChecks(false);
@@ -36,4 +35,5 @@ use WS\Wasabi\Cart;
 
     // Make sure you're running this as root
     $server3 = IoServer::factory(new HttpServer($wasabi3), 8789,  '0.0.0.0');
-    $server3->run();  
+    $server3->run();
+     
