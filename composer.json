@@ -14,12 +14,12 @@
         "simplon/mysql": "*",
         "analog/analog": "dev-master"
     },
-    "require-dev": { "codeclimate/php-test-reporter": "dev-master" 
+    "require-dev": { "codeclimate/php-test-reporter": "dev-master"
     },
     "autoload": {
         "psr-4": {
-            "WS\\Wasabi\\": "src",
-            "WS\\Prestashop\\":"/../../config/config.inc.php"
-        }
+            "WS\\Wasabi\\": "src"
+        },
+         "files": ["/../../config/config.inc.php"]
     }
 }

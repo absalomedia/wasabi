@@ -5,15 +5,6 @@ use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
 use Analog\Analog;
 
-$filename = dirname(__FILE__).'/../../config/config.inc.php';
-
-if (file_exists($filename)) {
-    include $filename;
-} else {
-    trigger_error("Unable to find Prestashop config file. Please rectify", E_USER_ERROR);
-}
-
-
 class Combination implements MessageComponentInterface {
 
     protected $clients;
@@ -39,21 +30,21 @@ class Combination implements MessageComponentInterface {
     }
 
     public function onMessage(ConnectionInterface $from, $msg) {
-         
+
         foreach ($this->clients as $client) {
             if ($from == $client) {
             $product = substr($msg, 0, strpos($msg, ','));
             $vars = explode(',', $msg);
             Analog::log ("Product variables: $msg");
             $choices = array_slice($vars, 1);
-            $id_product_attribute = $this->getAttribute($product,$choices);      
+            $id_product_attribute = $this->getAttribute($product,$choices);
             Analog::log ("Product combination: $id_product_attribute");
             $combo_groups = $this->getCombination($id_product_attribute);
             if (is_array($combo_groups) && $combo_groups) {
             foreach ($combo_groups as $k => $row)
             {
-                $combinations = $this->buildAttributes($id_product_attribute,$row);        
-            }   
+                $combinations = $this->buildAttributes($id_product_attribute,$row);
+            }
 
         }
             $client->send(json_encode($combinations));
@@ -103,10 +94,10 @@ class Combination implements MessageComponentInterface {
                 if ($row['available_date'] != '0000-00-00') {
                     $combinations[$row['id_product_attribute']]['available_date'] = $row['available_date'];
                 }
-                $combinations[$row['id_product_attribute']]['image'] = $this->getComboImage($id_product_attribute);          
+                $combinations[$row['id_product_attribute']]['image'] = $this->getComboImage($id_product_attribute);
                 $combinations[$row['id_product_attribute']]['final_price'] = $this->getFinalPrice($row, $specfic_price);
 
-        return $combinations;   
+        return $combinations;
 
     }
 
@@ -114,7 +105,7 @@ class Combination implements MessageComponentInterface {
          if ( $specific_price['price'] != 0) {
                     $final_price = ( ( (float)$row['base_price'] + (float)$row['price'] ) * ( ((int) 100 - $specific_price['reduction_percent']) / 100) );
                 } else {
-                    $final_price = (float)$row['base_price'] + (float)$row['price'];      
+                    $final_price = (float)$row['base_price'] + (float)$row['price'];
          }
          return $final_price;
     }
@@ -160,7 +151,7 @@ class Combination implements MessageComponentInterface {
 
                       return $specific_price;
                     } else {
-                      return null;  
+                      return null;
                     }
 
     }
@@ -176,7 +167,7 @@ class Combination implements MessageComponentInterface {
                             ) ';
 
             $sql .= ' ORDER BY `id_product_attribute` DESC, `from_quantity` DESC, `id_specific_price_rule` ASC';
-            
+
            $result = $this->dbConn->fetchRow($sql);
         return $result;
 
@@ -194,7 +185,7 @@ class Combination implements MessageComponentInterface {
     }
 
 
-    private function getComboImage($id_product_attribute) {     
+    private function getComboImage($id_product_attribute) {
                 $sql = 'SELECT pai.`id_image`as image
                         FROM `'._DB_PREFIX_.'product_attribute_image` pai
                         LEFT JOIN `'._DB_PREFIX_.'image_lang` il ON (il.`id_image` = pai.`id_image`)
