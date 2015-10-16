@@ -62,7 +62,7 @@ class Product implements MessageComponentInterface {
 
     }
 
-    public function getProducts($category)
+    private function getProducts($category)
     {
             $product_ids = $this->getProductIDs($category);
             $products = $this->getProduct($product_ids);
@@ -71,7 +71,7 @@ class Product implements MessageComponentInterface {
     }
 
 
-    public function getProductIDs($category)
+    private function getProductIDs($category)
     {
         $sql = 'SELECT DISTINCT p.id_product
                 from '._DB_PREFIX_.'product as p
@@ -90,7 +90,7 @@ class Product implements MessageComponentInterface {
         return $ids;
     }
 
-    public function getProduct($ids)
+    private function getProduct($ids)
     {
         $sql = 'SELECT p.id_product, p.id_supplier, p.ean13, p.upc, p.price, p.wholesale_price, p.on_sale, p.quantity, p.id_category_default, p.show_price, p.available_for_order, p.minimal_quantity, p.customizable,
                     p.out_of_stock, pl.`link_rewrite`, pl.`name`, i.id_image, il.legend,
