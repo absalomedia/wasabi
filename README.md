@@ -1,9 +1,7 @@
 # Wasabi
 A Websocket loosely coupled tool for Prestashop products &amp; combinations
 
-[![Code Climate](https://codeclimate.com/github/absalomedia/wasabi/badges/gpa.svg)](https://codeclimate.com/github/absalomedia/wasabi)
-
-[![Codacy Badge](https://api.codacy.com/project/badge/b742fbd760e143b09b8bc1d3450bffc0)](https://www.codacy.com/app/media/wasabi)
+[![Code Climate](https://codeclimate.com/github/absalomedia/wasabi/badges/gpa.svg)](https://codeclimate.com/github/absalomedia/wasabi) [![Codacy Badge](https://api.codacy.com/project/badge/b742fbd760e143b09b8bc1d3450bffc0)](https://www.codacy.com/app/media/wasabi) [![Build Status](https://travis-ci.org/absalomedia/wasabi.svg?branch=master)](https://travis-ci.org/absalomedia/wasabi)
 
 ## What's Wasabi?
 
@@ -17,20 +15,20 @@ The easiest path to install is:
 - Place into relevant Prestashop site in a subdirectory
 - Run Composer in that subdirectory
 
-		composer install
+        composer install
 
 - Watch as it builds in all the dependencies
 - Run a background cron job to keep the index.php file running as a server
 - Open port 8787 on the internal firewall if you haven't already
-- Profit 
+- Profit
 
 
 ## Usage
 
-Wasabi is aimed at product rendering process when dealing with massive amounts of combinations. This speeds up page load speed for products as the product combination data isn't rendered inline. 
+Wasabi is aimed at product rendering process when dealing with massive amounts of combinations. This speeds up page load speed for products as the product combination data isn't rendered inline.
 
 There is a function in most Prestashop themes inside product.js called
 
-	findCombination(firstTime)
+    findCombination(firstTime)
 
 You need to refactor this function & the data in it to talk to the Wasabi websocket server before you can use it. Wasabi will return a JSON string with the same variables as the Prestashop combinations.
