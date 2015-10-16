@@ -10,6 +10,8 @@ use Ratchet\WebSocket\WsServer;
 use Ratchet\Http\HttpServer;
 use Ratchet\Server\IoServer;
 use WS\Wasabi\Combination;
+use WS\Wasabi\Product;
+use WS\Wasabi\Cart;
 
     $wasabi = new WsServer(new Combination);
     $wasabi->disableVersion(0); // old, bad, protocol version
