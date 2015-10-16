@@ -1,7 +1,7 @@
 {
-    "name": "WS/Wasabi",
+    "name": "ws/wasabi",
     "description": "Websocket Prestashop product combination tool",
-    "license": "GPL",
+    "license": "GPL-3.0",
     "keywords": ["websocket","product","combination"],
     "authors": [
         {
