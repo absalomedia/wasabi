@@ -4,7 +4,6 @@ namespace WS\Wasabi;
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
 use Analog\Analog;
-use WS\Prestashop;
 
 class Cart implements MessageComponentInterface {
 
