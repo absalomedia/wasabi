@@ -204,7 +204,7 @@ class Combination implements MessageComponentInterface {
                         LEFT JOIN `'._DB_PREFIX_.'image` i ON (i.`id_image` = pai.`id_image`)
                         WHERE pai.`id_product_attribute` = '.(int)$id_product_attribute. ' ORDER by i.`position`';
                  $image = $this->dbConn->fetchColumn($sql);
-                 if ($image != false) {
+                 if ($image !== false) {
                     return (int)$image;
                  } else {
                     return -1;
