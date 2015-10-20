@@ -113,13 +113,13 @@ class Combination implements MessageComponentInterface {
 
     private function getCombination($id_product_attribute) {
              $sql = 'SELECT ag.id_attribute_group, ag.is_color_group, agl.name AS group_name, agl.public_name AS public_group_name,
-                    a.id_attribute, al.name AS attribute_name, a.color AS attribute_color, product_attribute_shop.id_product_attribute,
-                    IFNULL(stock.quantity, 0) as quantity, product_attribute_shop.price, product_attribute_shop.ecotax, product_attribute_shop.weight,
-                    product_attribute_shop.default_on, pa.reference, product_attribute_shop.unit_price_impact,
-                    product_attribute_shop.minimal_quantity, product_attribute_shop.available_date, ag.group_type
+                    a.id_attribute, al.name AS attribute_name, a.color AS attribute_color, pas.id_product_attribute,
+                    IFNULL(stock.quantity, 0) as quantity, pas.price, pas.ecotax, pas.weight,
+                    pas.default_on, pa.reference, pas.unit_price_impact,
+                    pas.minimal_quantity, pas.available_date, ag.group_type
                 FROM '._DB_PREFIX_.'product_attribute pa
-                 INNER JOIN '._DB_PREFIX_.'product_attribute_shop1 pas
-                    ON (product_attribute_shop.id_product_attribute = pa.id_product_attribute AND product_attribute_shop.id_shop = 1)
+                 INNER JOIN '._DB_PREFIX_.'product_attribute_shop pas
+                    ON (pas.id_product_attribute = pa.id_product_attribute AND pas.id_shop = 1)
                  LEFT JOIN '._DB_PREFIX_.'stock_available stock
                         ON (stock.id_product = pa.id_product AND stock.id_product_attribute = IFNULL(pa.id_product_attribute, 0) AND stock.id_shop = 1  )
                 LEFT JOIN '._DB_PREFIX_.'product_attribute_combination pac ON (pac.id_product_attribute = pa.id_product_attribute)
@@ -129,7 +129,7 @@ class Combination implements MessageComponentInterface {
                 LEFT JOIN '._DB_PREFIX_.'attribute_group_lang agl ON (ag.id_attribute_group = agl.id_attribute_group)
                  INNER JOIN '._DB_PREFIX_.'attribute_shop attribute_shop
                     ON (attribute_shop.id_attribute = a.id_attribute AND attribute_shop.id_shop = 1)
-                WHERE product_attribute_shop.id_product_attribute= '.(int)$id_product_attribute.'
+                WHERE pas.id_product_attribute= '.(int)$id_product_attribute.'
                 GROUP BY id_attribute_group, id_product_attribute
                 ORDER BY ag.position ASC, a.position ASC, agl.name ASC';
 
