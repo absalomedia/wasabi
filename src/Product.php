@@ -83,8 +83,8 @@ class Product implements MessageComponentInterface {
     private function getProduct($ids)
     {
         $sql = 'SELECT p.id_product, p.id_supplier, p.ean13, p.upc, p.price, p.wholesale_price, p.on_sale, p.quantity, p.id_category_default, p.show_price, p.available_for_order, p.minimal_quantity, p.customizable,
-                    p.out_of_stock, pl.`link_rewrite`, pl.`name`, i.id_image, il.legend,
-                    cl.`name` AS category_default,  cl.`id_category` AS cat_id,
+                    p.out_of_stock, pl.link_rewrite, pl.name, i.id_image, il.legend,
+                    cl.name AS category_default,  cl.id_category AS cat_id,
                     ps.price AS orderprice
                     FROM '._DB_PREFIX_.'product as p                 
                     LEFT JOIN '._DB_PREFIX_.'image AS i ON i.id_product = p.id_product 

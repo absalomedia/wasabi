@@ -56,7 +56,7 @@ class Combination implements MessageComponentInterface {
     private function getAttribute($product, $choices) {
             $sql = 'SELECT pac.id_product_attribute from '._DB_PREFIX_.'product_attribute_combination as pac
                 LEFT JOIN  '._DB_PREFIX_.'product_attribute as ppa on ppa.id_product_attribute = pac.id_product_attribute
-                LEFT JOIN `'._DB_PREFIX_.'attribute` a ON (a.`id_attribute` = pac.`id_attribute`)
+                LEFT JOIN '._DB_PREFIX_.'attribute a ON (a.id_attribute = pac.id_attribute)
                 WHERE ppa.id_product = '.$product;
              foreach ($choices as $value) {
             $sql .= ' AND pac.id_product_attribute IN
@@ -112,26 +112,26 @@ class Combination implements MessageComponentInterface {
 
 
     private function getCombination($id_product_attribute) {
-             $sql = 'SELECT ag.`id_attribute_group`, ag.`is_color_group`, agl.`name` AS group_name, agl.`public_name` AS public_group_name,
-                    a.`id_attribute`, al.`name` AS attribute_name, a.`color` AS attribute_color, product_attribute_shop.`id_product_attribute`,
-                    IFNULL(stock.quantity, 0) as quantity, product_attribute_shop.`price`, product_attribute_shop.`ecotax`, product_attribute_shop.`weight`,
-                    product_attribute_shop.`default_on`, pa.`reference`, product_attribute_shop.`unit_price_impact`,
-                    product_attribute_shop.`minimal_quantity`, product_attribute_shop.`available_date`, ag.`group_type`
-                FROM `'._DB_PREFIX_.'product_attribute` pa
-                 INNER JOIN '._DB_PREFIX_.'product_attribute_shop product_attribute_shop
+             $sql = 'SELECT ag.id_attribute_group, ag.is_color_group, agl.name AS group_name, agl.public_name AS public_group_name,
+                    a.id_attribute, al.name AS attribute_name, a.color AS attribute_color, product_attribute_shop.id_product_attribute,
+                    IFNULL(stock.quantity, 0) as quantity, product_attribute_shop.price, product_attribute_shop.ecotax, product_attribute_shop.weight,
+                    product_attribute_shop.default_on, pa.reference, product_attribute_shop.unit_price_impact,
+                    product_attribute_shop.minimal_quantity, product_attribute_shop.available_date, ag.group_type
+                FROM '._DB_PREFIX_.'product_attribute pa
+                 INNER JOIN '._DB_PREFIX_.'product_attribute_shop1 pas
                     ON (product_attribute_shop.id_product_attribute = pa.id_product_attribute AND product_attribute_shop.id_shop = 1)
                  LEFT JOIN '._DB_PREFIX_.'stock_available stock
-                        ON (stock.id_product = pa.id_product AND stock.id_product_attribute = IFNULL(`pa`.id_product_attribute, 0) AND stock.id_shop = 1  )
-                LEFT JOIN `'._DB_PREFIX_.'product_attribute_combination` pac ON (pac.`id_product_attribute` = pa.`id_product_attribute`)
-                LEFT JOIN `'._DB_PREFIX_.'attribute` a ON (a.`id_attribute` = pac.`id_attribute`)
-                LEFT JOIN `'._DB_PREFIX_.'attribute_group` ag ON (ag.`id_attribute_group` = a.`id_attribute_group`)
-                LEFT JOIN `'._DB_PREFIX_.'attribute_lang` al ON (a.`id_attribute` = al.`id_attribute`)
-                LEFT JOIN `'._DB_PREFIX_.'attribute_group_lang` agl ON (ag.`id_attribute_group` = agl.`id_attribute_group`)
+                        ON (stock.id_product = pa.id_product AND stock.id_product_attribute = IFNULL(pa.id_product_attribute, 0) AND stock.id_shop = 1  )
+                LEFT JOIN '._DB_PREFIX_.'product_attribute_combination pac ON (pac.id_product_attribute = pa.id_product_attribute)
+                LEFT JOIN '._DB_PREFIX_.'attribute a ON (a.id_attribute = pac.id_attribute)
+                LEFT JOIN '._DB_PREFIX_.'attribute_group ag ON (ag.id_attribute_group = a.id_attribute_group)
+                LEFT JOIN '._DB_PREFIX_.'attribute_lang al ON (a.id_attribute = al.id_attribute)
+                LEFT JOIN '._DB_PREFIX_.'attribute_group_lang agl ON (ag.id_attribute_group = agl.id_attribute_group)
                  INNER JOIN '._DB_PREFIX_.'attribute_shop attribute_shop
                     ON (attribute_shop.id_attribute = a.id_attribute AND attribute_shop.id_shop = 1)
-                WHERE product_attribute_shop.`id_product_attribute`= '.(int)$id_product_attribute.'
+                WHERE product_attribute_shop.id_product_attribute= '.(int)$id_product_attribute.'
                 GROUP BY id_attribute_group, id_product_attribute
-                ORDER BY ag.`position` ASC, a.`position` ASC, agl.`name` ASC';
+                ORDER BY ag.position ASC, a.position ASC, agl.name ASC';
 
 
             $combo_groups = $this->dbConn->fetchRowMany($sql);
@@ -157,16 +157,16 @@ class Combination implements MessageComponentInterface {
     }
 
     private function getSpecificPriceData($id_product_attribute, $product, $now) {
-            $sql = 'SELECT * FROM `'._DB_PREFIX_.'specific_price`
-                            WWHERE `id_product` = '.(int)$id_product.'
-                            AND `id_product_attribute` IN (0, '.(int)$id_product_attribute.')
+            $sql = 'SELECT * FROM '._DB_PREFIX_.'specific_price
+                            WWHERE id_product = '.(int)$id_product.'
+                            AND id_product_attribute IN (0, '.(int)$id_product_attribute.')
                             AND (
-                                   (`from` = \'0000-00-00 00:00:00\' OR \''.$now.'\' >= `from`)
+                                   (from = \'0000-00-00 00:00:00\' OR \''.$now.'\' >= from)
                             AND
-                                     (`to` = \'0000-00-00 00:00:00\' OR \''.$now.'\' <= `to`)
+                                     (to = \'0000-00-00 00:00:00\' OR \''.$now.'\' <= to)
                             ) ';
 
-            $sql .= ' ORDER BY `id_product_attribute` DESC, `from_quantity` DESC, `id_specific_price_rule` ASC';
+            $sql .= ' ORDER BY id_product_attribute DESC, from_quantity DESC, id_specific_price_rule ASC';
 
            $result = $this->dbConn->fetchRow($sql);
         return $result;
@@ -186,11 +186,11 @@ class Combination implements MessageComponentInterface {
 
 
     private function getComboImage($id_product_attribute) {
-                $sql = 'SELECT pai.`id_image`as image
-                        FROM `'._DB_PREFIX_.'product_attribute_image` pai
-                        LEFT JOIN `'._DB_PREFIX_.'image_lang` il ON (il.`id_image` = pai.`id_image`)
-                        LEFT JOIN `'._DB_PREFIX_.'image` i ON (i.`id_image` = pai.`id_image`)
-                        WHERE pai.`id_product_attribute` = '.(int)$id_product_attribute. ' ORDER by i.`position`';
+                $sql = 'SELECT pai.id_imageas image
+                        FROM '._DB_PREFIX_.'product_attribute_image pai
+                        LEFT JOIN '._DB_PREFIX_.'image_lang il ON (il.id_image = pai.id_image)
+                        LEFT JOIN '._DB_PREFIX_.'image i ON (i.id_image = pai.id_image)
+                        WHERE pai.id_product_attribute = '.(int)$id_product_attribute. ' ORDER by i.position';
                  $image = $this->dbConn->fetchColumn($sql);
                  if ($image !== false) {
                     return (int)$image;
