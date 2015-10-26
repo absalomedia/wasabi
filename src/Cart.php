@@ -1,6 +1,6 @@
 <?php
 
-namespace AB\Wasabi;
+namespace ABM\Wasabi;
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
 use Analog\Analog;

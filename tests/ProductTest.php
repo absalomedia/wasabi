@@ -1,6 +1,6 @@
 <?php
-namespace AB\Tests;
-use AB\Wasabi\Product;
+namespace ABM\Tests;
+use ABM\Wasabi\Product;
 /**
  * @covers WS\Wasabi\Product
  */

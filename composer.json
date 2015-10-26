@@ -1,5 +1,5 @@
 {
-    "name": "ab/wasabi",
+    "name": "abm/wasabi",
     "description": "Prestashop websocket tool",
     "license": "GPL-3.0",
     "keywords": ["websocket","product","combination","Prestashop","ecommerce","cart"],
@@ -20,7 +20,7 @@
     },
     "autoload": {
         "psr-4": {
-            "AB\\Wasabi\\": "src"
+            "ABM\\Wasabi\\": "src"
         },
          "files": ["/../../config/config.inc.php"]
     },

@@ -6,9 +6,9 @@ require 'vendor/autoload.php';
 use Ratchet\WebSocket\WsServer;
 use Ratchet\Http\HttpServer;
 use Ratchet\Server\IoServer;
-use AB\Wasabi\Combination;
-use AB\Wasabi\Product;
-use AB\Wasabi\Cart;
+use ABM\Wasabi\Combination;
+use ABM\Wasabi\Product;
+use ABM\Wasabi\Cart;
 
     $wasabi = new WsServer(new Combination);
     $wasabi->disableVersion(0); // old, bad, protocol version
