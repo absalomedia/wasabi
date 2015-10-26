@@ -1,8 +1,8 @@
 {
     "name": "ws/wasabi",
-    "description": "Websocket Prestashop product combination tool",
+    "description": "Prestashop websocket tool",
     "license": "GPL-3.0",
-    "keywords": ["websocket","product","combination"],
+    "keywords": ["websocket","product","combination","Prestashop","ecommerce","cart"],
     "authors": [
         {
             "name": "Lawrence Meckan",
@@ -23,5 +23,12 @@
             "WS\\Wasabi\\": "src"
         },
          "files": ["/../../config/config.inc.php"]
-    }
+    },
+  "support": {
+    "issues": "https://github.com/absalomedia/wasabi/issues"
+  },
+
+  "replace": {
+    "absalomedia/wasabi": "self.version"
+  }
 }
