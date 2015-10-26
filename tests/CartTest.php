@@ -1,6 +1,6 @@
 <?php
-namespace WS\Tests;
-use WS\Wasabi\Cart;
+namespace AB\Tests;
+use AB\Wasabi\Cart;
 /**
  * @covers WS\Wasabi\Cart
  */

@@ -1,6 +1,6 @@
 <?php
-namespace WS\Tests;
-use WS\Wasabi\Combination;
+namespace AB\Tests;
+use AB\Wasabi\Combination;
 /**
  * @covers WS\Wasabi\Combination
  */
