@@ -19,7 +19,7 @@ The easiest path to install is:
 
 - Watch as it builds in all the dependencies
 - Run a background cron job to keep the index.php file running as a server
-- Open port 8787 on the internal firewall if you haven't already
+- Open port 8787 to 8989 on the internal firewall if you haven't already
 - Profit
 
 
