@@ -1,16 +1,18 @@
 <?php
 
 namespace ABM\Wasabi;
+
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
 use Analog\Analog;
 
-class Product implements MessageComponentInterface {
-
+class Product implements MessageComponentInterface
+{
     protected $clients;
 
-    public function __construct() {
-        $this->clients = new \SplObjectStorage;
+    public function __construct()
+    {
+        $this->clients = new \SplObjectStorage();
         // Now connect to PS DB using Simplon on Composer
         $this->dbConn = new \Simplon\Mysql\Mysql(
     '127.0.0.1',
@@ -19,47 +21,43 @@ class Product implements MessageComponentInterface {
     _DB_NAME_
         );
         $log_file = 'ws-prod.log';
-        Analog::handler (\Analog\Handler\File::init ($log_file));
+        Analog::handler(\Analog\Handler\File::init($log_file));
     }
 
-    public function onOpen(ConnectionInterface $conn) {
+    public function onOpen(ConnectionInterface $conn)
+    {
         // Store the new connection to send messages to later
         $this->clients->attach($conn);
 
-        Analog::log ("New connection: $conn->resourceId");
+        Analog::log("New connection: $conn->resourceId");
     }
 
-    public function onMessage(ConnectionInterface $from, $msg) {
-            
+    public function onMessage(ConnectionInterface $from, $msg)
+    {
         foreach ($this->clients as $client) {
-
             if ($from == $client) {
-
-            $category = (int) substr($msg, 0, strpos($msg, ','));
-            if ($category != 0) {
-                $products = $this->getProducts($category);
-            } else {
-                $product = substr($msg, strpos($msg, ",") + 1);
-                $products = $this->getProducts($product);
-            }           
-            Analog::log ("Product variables: $msg");
-            }   
-
+                $category = (int) substr($msg, 0, strpos($msg, ','));
+                if ($category != 0) {
+                    $products = $this->getProducts($category);
+                } else {
+                    $product = substr($msg, strpos($msg, ',') + 1);
+                    $products = $this->getProducts($product);
+                }
+                Analog::log("Product variables: $msg");
+            }
         }
 
             // Basic test - fire the correct product back via Websocket
             $client->send(json_encode($products));
-
     }
 
     private function getProducts($category)
     {
-            $product_ids = $this->getProductIDs($category);
-            $products = $this->getProduct($product_ids);
+        $product_ids = $this->getProductIDs($category);
+        $products = $this->getProduct($product_ids);
 
-            return $products;
+        return $products;
     }
-
 
     private function getProductIDs($category)
     {
@@ -68,14 +66,14 @@ class Product implements MessageComponentInterface {
                 LEFT JOIN '._DB_PREFIX_.'image AS i ON i.id_product = p.id_product 
                 LEFT JOIN '._DB_PREFIX_.'product_lang as pl ON pl.id_product = p.id_product
                 WHERE p.active = 1
-                AND p.id_category_default = '.(int)$category.'
+                AND p.id_category_default = '.(int) $category.'
                 GROUP BY p.id_product';
         $pcats = $this->dbConn->fetchRowMany($sql);
         $ids = '';
         foreach ($pcats as $row) {
             $ids .= $row['id_product'].',';
         }
-        $ids = rtrim($ids, ",");
+        $ids = rtrim($ids, ',');
 
         return $ids;
     }
@@ -97,23 +95,23 @@ class Product implements MessageComponentInterface {
                     AND p.active = 1
                     GROUP BY p.id_product
                     ORDER BY p.price ASC';
-    
+
         $result = $this->dbConn->fetchRowMany($sql);
 
         return $result;
     }
 
-
-
-    public function onClose(ConnectionInterface $conn) {
+    public function onClose(ConnectionInterface $conn)
+    {
         // The connection is closed, remove it, as we can no longer send it messages
         $this->clients->detach($conn);
-        Analog::log ("Connection ".$conn->resourceId." has disconnected");
+        Analog::log('Connection '.$conn->resourceId.' has disconnected');
     }
 
-    public function onError(ConnectionInterface $conn, \Exception $e) {
+    public function onError(ConnectionInterface $conn, \Exception $e)
+    {
         echo "An error has occurred: {$e->getMessage()}\n";
-        Analog::log ("Error: ".$e->getMessage()."");
+        Analog::log('Error: '.$e->getMessage().'');
         $conn->close();
     }
 }

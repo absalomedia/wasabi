@@ -10,7 +10,7 @@ use ABM\Wasabi\Combination;
 use ABM\Wasabi\Product;
 use ABM\Wasabi\Cart;
 
-    $wasabi = new WsServer(new Combination);
+$wasabi = new WsServer(new Combination());
     $wasabi->disableVersion(0); // old, bad, protocol version
     $wasabi->setEncodingChecks(false);
 
@@ -18,7 +18,7 @@ use ABM\Wasabi\Cart;
     $server = IoServer::factory(new HttpServer($wasabi), 8787,  '0.0.0.0');
     $server->run();
 
-    $wasabi2 = new WsServer(new Product);
+    $wasabi2 = new WsServer(new Product());
     $wasabi2->disableVersion(0); // old, bad, protocol version
     $wasabi2->setEncodingChecks(false);
 
@@ -26,7 +26,7 @@ use ABM\Wasabi\Cart;
     $server2 = IoServer::factory(new HttpServer($wasabi2), 8788,  '0.0.0.0');
     $server2->run();
 
-    $wasabi3 = new WsServer(new Cart);
+    $wasabi3 = new WsServer(new Cart());
     $wasabi3->disableVersion(0); // old, bad, protocol version
     $wasabi3->setEncodingChecks(false);
 

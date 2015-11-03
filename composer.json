@@ -29,6 +29,6 @@
   },
 
   "replace": {
-    "absalomedia/wasabi": "self.version"
+    "abm/wasabi": "self.version"
   }
 }
