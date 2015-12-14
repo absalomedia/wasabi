@@ -15,7 +15,7 @@ addons:
 
 before_install:
   - composer self-update
-  - pip install codecov
+  - pip install --user codecov
 
 # Commands to be run before your environment runs.
 before_script:
@@ -30,7 +30,7 @@ after_script:
   - vendor/bin/test-reporter
 
 after_success:
-    - bash <(curl -s https://codecov.io/bash)
+  - codecov
 
 # allow_failures: Allow this build to fail under the specified environments.
 # fast_finish: If your build fails do not continue trying to build, just stop.
