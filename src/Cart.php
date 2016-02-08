@@ -48,7 +48,7 @@ class Cart implements MessageComponentInterface
         }
 
             // Basic test - fire the correct cart back via Websocket
-            if(!empty($otherCarts)) {
+            if (!empty($otherCarts)) {
             $client->send(json_encode($otherCarts));
             } 
     }
