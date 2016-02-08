@@ -41,12 +41,12 @@ class Prestashop implements MessageComponentInterface
                 $type = strtolower(substr($msg, 0, strpos($msg, '|')));
                 $data = substr($msg, strpos($msg,'|') + 1);
                 switch($type) {
-                    case 'cart' : $result = getCartData($data);
-                                  break;
-                    case 'prod' : $result = getProductData($data);
-                                  break;
-                    case 'comb' : $result = getCombinationData($data);
-                                  break;
+                    case 'cart': { $result = getCartData($data);
+                                  break; }
+                    case 'prod': { $result = getProductData($data);
+                                  break; }
+                    case 'comb': { $result = getCombinationData($data);
+                                  break; }
                     case default: break;
 
                 }
