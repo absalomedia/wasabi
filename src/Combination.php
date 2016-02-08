@@ -53,6 +53,9 @@ class Combination implements MessageComponentInterface
         }
     }
 
+    /**
+     * @param string $product
+     */
     private function getAttribute($product, $choices)
     {
         $sql = 'SELECT pac.id_product_attribute from '._DB_PREFIX_.'product_attribute_combination as pac
@@ -143,7 +146,7 @@ class Combination implements MessageComponentInterface
     private function getSpecificPrice($id_product_attribute, $id_product)
     {
         if ($this->getNumberSpecificPrice($id_product_attribute, $id_product) > 0) {
-            $result = $this->getSpecificPriceData($id_product_attribute,  $id_product, date('Y-m-d H:i:s'));
+            $result = $this->getSpecificPriceData($id_product_attribute, $id_product, date('Y-m-d H:i:s'));
             $specific_price['price'] = $result['price'];
             $specific_price['id_product_attribute'] = $result['id_product_attribute'];
             $specific_price['reduction_percent'] = (int) 100 * $result['reduction'];
@@ -156,6 +159,9 @@ class Combination implements MessageComponentInterface
         }
     }
 
+    /**
+     * @param string $now
+     */
     private function getSpecificPriceData($id_product_attribute, $product, $now)
     {
         $sql = 'SELECT * FROM '._DB_PREFIX_.'specific_price

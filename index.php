@@ -15,7 +15,7 @@ $wasabi = new WsServer(new Combination());
     $wasabi->setEncodingChecks(false);
 
     // Make sure you're running this as root
-    $server = IoServer::factory(new HttpServer($wasabi), 8787,  '0.0.0.0');
+    $server = IoServer::factory(new HttpServer($wasabi), 8787, '0.0.0.0');
     $server->run();
 
     $wasabi2 = new WsServer(new Product());
@@ -23,7 +23,7 @@ $wasabi = new WsServer(new Combination());
     $wasabi2->setEncodingChecks(false);
 
     // Make sure you're running this as root
-    $server2 = IoServer::factory(new HttpServer($wasabi2), 8788,  '0.0.0.0');
+    $server2 = IoServer::factory(new HttpServer($wasabi2), 8788, '0.0.0.0');
     $server2->run();
 
     $wasabi3 = new WsServer(new Cart());
@@ -31,5 +31,5 @@ $wasabi = new WsServer(new Combination());
     $wasabi3->setEncodingChecks(false);
 
     // Make sure you're running this as root
-    $server3 = IoServer::factory(new HttpServer($wasabi3), 8789,  '0.0.0.0');
+    $server3 = IoServer::factory(new HttpServer($wasabi3), 8789, '0.0.0.0');
     $server3->run();
