@@ -74,6 +74,9 @@ class Combination implements MessageComponentInterface
         return $id_product_attribute;
     }
 
+    /**
+     * @param null|string $id_product_attribute
+     */
     private function buildAttributes($id_product_attribute, $row)
     {
         $combinations = array();
@@ -117,6 +120,9 @@ class Combination implements MessageComponentInterface
         return $final_price;
     }
 
+    /**
+     * @param null|string $id_product_attribute
+     */
     private function getCombination($id_product_attribute)
     {
         $sql = 'SELECT ag.id_attribute_group, ag.is_color_group, agl.name AS group_name, agl.public_name AS public_group_name,
