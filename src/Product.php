@@ -9,6 +9,7 @@ use Analog\Analog;
 class Product implements MessageComponentInterface
 {
     protected $clients;
+    protected $dbConn;
 
     public function __construct()
     {
