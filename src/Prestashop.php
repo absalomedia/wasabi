@@ -56,6 +56,9 @@ class Prestashop implements MessageComponentInterface
         }
     }
 
+    /**
+     * @param string $data
+     */
     private function getCombinationData($data) {
         $product = substr($data, 0, strpos($data, ','));
                 $vars = explode(',', $data);
@@ -72,6 +75,9 @@ class Prestashop implements MessageComponentInterface
         return $combinations;
     }
 
+    /**
+     * @param string $data
+     */
     private function getProductData($data) {
                 $category = (int) substr($data, 0, strpos($data, ','));
                 if ($category != 0) {
@@ -84,6 +90,9 @@ class Prestashop implements MessageComponentInterface
         return $products;
     }
 
+    /**
+     * @param string $data
+     */
     private function getCartData($data) {
         $cart = substr($data, 0, strpos($data, ','));
         $cust = substr($data, strpos($data, ',') + 1);
@@ -217,6 +226,9 @@ class Prestashop implements MessageComponentInterface
         return $combo_groups;
     }
 
+    /**
+     * @param null|string $id_product_attribute
+     */
     private function getSpecificPrice($id_product_attribute, $id_product)
     {
         if ($this->getNumberSpecificPrice($id_product_attribute, $id_product) > 0) {
@@ -267,6 +279,9 @@ class Prestashop implements MessageComponentInterface
         return $spec;
     }
 
+    /**
+     * @param null|string $id_product_attribute
+     */
     private function getComboImage($id_product_attribute)
     {
         $sql = 'SELECT pai.id_imageas image
