@@ -6,7 +6,7 @@ use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
 use Analog\Analog;
 
-class Combination implements MessageComponentInterface
+class Prestashop implements MessageComponentInterface
 {
     protected $clients;
     protected $dbConn;
@@ -21,7 +21,7 @@ class Combination implements MessageComponentInterface
     _DB_PASSWD_,
     _DB_NAME_
         );
-        $log_file = 'ws-comb.log';
+        $log_file = 'wasabi.log';
         Analog::handler(\Analog\Handler\File::init($log_file));
     }
 
@@ -35,11 +35,32 @@ class Combination implements MessageComponentInterface
 
     public function onMessage(ConnectionInterface $from, $msg)
     {
+        $result = null;
         foreach ($this->clients as $client) {
             if ($from == $client) {
-                $product = substr($msg, 0, strpos($msg, ','));
-                $vars = explode(',', $msg);
-                Analog::log("Product variables: $msg");
+                $type = strtolower(substr($msg, 0, strpos($msg, '|')));
+                $data = substr($msg, strpos($msg,'|') + 1);
+                switch($type) {
+                    case 'cart' : $result = getCartData($data);
+                                  break;
+                    case 'prod' : $result = getProductData($data);
+                                  break;
+                    case 'comb' : $result = getCombinationData($data);
+                                  break;
+                    case default: break;
+
+                }
+                if(!empty($result)) {
+                $client->send(json_encode($result));
+                }
+            }
+        }
+    }
+
+    private function getCombinationData($data) {
+        $product = substr($data, 0, strpos($data, ','));
+                $vars = explode(',', $data);
+                Analog::log("Product variables: $data");
                 $choices = array_slice($vars, 1);
                 $id_product_attribute = $this->getAttribute($product, $choices);
                 Analog::log("Product combination: $id_product_attribute");
@@ -49,10 +70,56 @@ class Combination implements MessageComponentInterface
                         $combinations = $this->buildAttributes($id_product_attribute, $row);
                     }
                 }
-                $client->send(json_encode($combinations));
+        return $combinations;
+    }
+
+    private function getProductData($data) {
+                $category = (int) substr($data, 0, strpos($data, ','));
+                if ($category != 0) {
+                    $products = $this->getProducts($category);
+                } else {
+                    $product = substr($data, strpos($data, ',') + 1);
+                    $products = $this->getProducts($product);
+                }
+                Analog::log("Product variables: $data");
+        return $products;
+    }
+
+    private function getCartData($data) {
+        $cart = substr($data, 0, strpos($data, ','));
+        $cust = substr($data, strpos($data, ',') + 1);
+
+        Analog::log("Cart & customer variables: $data");
+        $otherCarts = $this->processFindCarts($cart, $cust);
+        return $otherCarts;
+    }
+
+
+/**
+     * @param string $cart
+     * @param string $cust
+     */
+    private function processFindCarts($cart, $cust)
+    {
+        $sql = 'SELECT DISTINCT pc.id_cart as id, DATE_FORMAT(pc.date_upd,"%a %D %b %Y, %l:%i %p") as timer from '._DB_PREFIX_.'cart as pc
+                LEFT JOIN  '._DB_PREFIX_.'cart_product as pcp on pcp.id_cart = pc.id_cart
+                WHERE pc.id_cart NOT IN (SELECT po.id_cart FROM  '._DB_PREFIX_.'orders as po)
+                AND pcp.id_product IS NOT NULL
+                AND pc.id_customer = '.(int) $cust.'
+                AND pc.id_cart != '.(int) $cart.'
+                ORDER BY pc.date_upd DESC
+                LIMIT 10';
+        if ($results = $this->dbConn->fetchRowMany($sql)) {
+            foreach ($results as &$row) {
+                $row['token'] = md5(_COOKIE_KEY_.'recover_cart_'.$row['id']);
             }
+
+            return $results;
+        } else {
+            return;
         }
     }
+
 
     /**
      * @param string $product
@@ -215,6 +282,64 @@ class Combination implements MessageComponentInterface
             return -1;
         }
     }
+
+
+   private function getProducts($category)
+    {
+        $product_ids = $this->getProductIDs($category);
+        $products = $this->getProduct($product_ids);
+
+        return $products;
+    }
+
+    private function getProductIDs($category)
+    {
+        $sql = 'SELECT DISTINCT p.id_product
+                from '._DB_PREFIX_.'product as p
+                LEFT JOIN '._DB_PREFIX_.'image AS i ON i.id_product = p.id_product 
+                LEFT JOIN '._DB_PREFIX_.'product_lang as pl ON pl.id_product = p.id_product
+                WHERE p.active = 1
+                AND p.id_category_default = '.(int) $category.'
+                GROUP BY p.id_product';
+        $pcats = $this->dbConn->fetchRowMany($sql);
+        $ids = '';
+        if (is_array($pcats) && (!empty($pcats))) {
+        foreach ($pcats as $row) {
+            $ids .= $row['id_product'].',';
+            }
+        }
+
+        $ids = rtrim($ids, ',');
+
+        return $ids;
+    }
+
+    /**
+     * @param string $ids
+     */
+    private function getProduct($ids)
+    {
+        $sql = 'SELECT p.id_product, p.id_supplier, p.ean13, p.upc, p.price, p.wholesale_price, p.on_sale, p.quantity, p.id_category_default, p.show_price, p.available_for_order, p.minimal_quantity, p.customizable,
+                    p.out_of_stock, pl.link_rewrite, pl.name, i.id_image, il.legend,
+                    cl.name AS category_default,  cl.id_category AS cat_id,
+                    ps.price AS orderprice
+                    FROM '._DB_PREFIX_.'product as p                 
+                    LEFT JOIN '._DB_PREFIX_.'image AS i ON i.id_product = p.id_product 
+                    LEFT JOIN '._DB_PREFIX_.'product_shop as ps ON ps.id_product = p.id_product
+                    LEFT JOIN '._DB_PREFIX_.'product_lang as pl ON pl.id_product = p.id_product
+                    LEFT JOIN '._DB_PREFIX_.'image_lang as il ON i.id_image = il.id_image
+                    LEFT JOIN '._DB_PREFIX_.'category_lang cl ON p.id_category_default = cl.id_category
+                    WHERE p.id_product IN ('.$ids.')
+                    AND i.cover = 1
+                    AND p.active = 1
+                    GROUP BY p.id_product
+                    ORDER BY p.price ASC';
+
+        $result = $this->dbConn->fetchRowMany($sql);
+
+        return $result;
+    }
+
 
     public function onClose(ConnectionInterface $conn)
     {
