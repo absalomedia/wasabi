@@ -10,10 +10,7 @@
         }
     ],
     "require": {
-        "simplon/mysql": "*"
-
-    },
-    "require-dev": {
+        "simplon/mysql": "*",
         "codeclimate/php-test-reporter": "dev-master",
         "cboden/ratchet": "dev-master",
         "analog/analog": "dev-master"
