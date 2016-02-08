@@ -3,9 +3,11 @@ A Websocket loosely coupled tool for Prestashop carts, products &amp; combinatio
 
 [![Code Climate](https://codeclimate.com/github/absalomedia/wasabi/badges/gpa.svg)](https://codeclimate.com/github/absalomedia/wasabi) [![Codacy Badge](https://api.codacy.com/project/badge/b742fbd760e143b09b8bc1d3450bffc0)](https://www.codacy.com/app/media/wasabi) [![Build Status](https://travis-ci.org/absalomedia/wasabi.svg?branch=master)](https://travis-ci.org/absalomedia/wasabi) [![SensioLabsInsight](https://insight.sensiolabs.com/projects/fac9d36c-ad9e-4fe0-b48f-7767aebcae48/mini.png)](https://insight.sensiolabs.com/projects/fac9d36c-ad9e-4fe0-b48f-7767aebcae48)
 
+![Prestashop 1.5](https://img.shields.io/badge/Prestashop-1.5-blue.svg) ![Prestashop 1.6](https://img.shields.io/badge/Prestashop-1.6-red.svg)
+
 ## What's Wasabi?
 
-Wasabi is a Websocket based tool, built using Composer &amp; Ratchet to expose data on a Prestashop ecommerce build. It's very alpha as well so expect gremlins but not dragons. Mostly tested with 1.5.x builds but also experimentally tested with 1.6.x. It's somewhat PSR-4 compliant as well.
+Wasabi is a Websocket based tool, built using Composer &amp; Ratchet to expose data on a Prestashop ecommerce build. It's very alpha as well so expect gremlins but not dragons. Mostly tested with 1.5.6.x builds but also experimentally tested with 1.6.x. It's somewhat PSR-4 compliant as well.
 
 ## Installation
 
