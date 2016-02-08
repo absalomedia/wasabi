@@ -9,6 +9,7 @@ use Analog\Analog;
 class Combination implements MessageComponentInterface
 {
     protected $clients;
+    protected $dbConn;
 
     public function __construct()
     {

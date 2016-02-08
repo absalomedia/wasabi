@@ -9,6 +9,7 @@ use Analog\Analog;
 class Cart implements MessageComponentInterface
 {
     protected $clients;
+    protected $dbConn;
 
     public function __construct()
     {
@@ -20,7 +21,7 @@ class Cart implements MessageComponentInterface
     _DB_PASSWD_,
     _DB_NAME_
         );
-        $log_file = 'ws-prod.log';
+        $log_file = 'ws-cart.log';
         Analog::handler(\Analog\Handler\File::init($log_file));
     }
 
@@ -34,6 +35,7 @@ class Cart implements MessageComponentInterface
 
     public function onMessage(ConnectionInterface $from, $msg)
     {
+        $otherCarts = array();
         foreach ($this->clients as $client) {
             if ($from == $client) {
                 $cart = substr($msg, 0, strpos($msg, ','));
@@ -45,8 +47,10 @@ class Cart implements MessageComponentInterface
             }
         }
 
-            // Basic test - fire the correct combination back via Websocket
+            // Basic test - fire the correct cart back via Websocket
+            if(!empty($otherCarts)) {
             $client->send(json_encode($otherCarts));
+            } 
     }
 
     /**
