@@ -21,16 +21,29 @@ The easiest path to install is:
 
 - Watch as it builds in all the dependencies
 - Run a background cron job to keep the index.php file running as a server
-- Open port 8787 to 8789 on the internal firewall if you haven't already
+- Open port 8787 on the internal firewall if you haven't already
 - Profit
 
 
 ## Usage
 
-Wasabi is aimed at product rendering process when dealing with massive amounts of combinations. This speeds up page load speed for products as the product combination data isn't rendered inline.
+Wasabi was originally designed to get product combination data from large scale / enterprise Prestashop ecommerce stores. It has since matured to allow cart & product data to also be captured via websockets.
 
-There is a function in most Prestashop themes inside product.js called
+As of the 0.1 release, there is 1 websocket server that can negotiate carts, products & combinations. How does it do this?
 
-    findCombination(firstTime)
+The basic code notation works as follows, and must be passed as a concatenated string (for obvious reasons):
 
-You need to refactor this function & the data in it to talk to the Wasabi websocket server before you can use it. Wasabi will return a JSON string with the same variables as the Prestashop combinations.
+```php
+type|data as comma seperated variables
+```
+
+The various types available are:
+ - cart
+ - prod
+ - comb
+
+The 'cart' variable, used in finding related carts for a customer, requires the cart ID followed by the customer ID. Wasabi will return a JSON string with the other cart IDs that customer has along with the time they were created.
+
+The 'prod' variable, used in finding basic product details via Websocket, operates two ways. When the first variable in the data string is not set to 0, it considers that variable the category & then looks in the specific category ID for that product. When that variable is set to 0, it ignores it & just looks at the second variable. In both cases, the second variable is always the product ID.  Wasabi will return a JSON string with the same standard variables as a Prestashop product.
+
+The 'comb' variable allows you to find specific combination data, including pricing for a specific product. The data from this variable is used inside most Prestashop product.js files inside the findCombination(firstTime) loop. The first variable in the data stream for this setting is the product ID, followed by each individual combination variable IDs for that product (taken from the product Attributes & Values area). You need to refactor the findCombination(firstTime) function & the data in it to talk to the Wasabi websocket server before you can use it. Wasabi will return a JSON string with the same variables as the Prestashop combinations.
