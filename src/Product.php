@@ -71,9 +71,12 @@ class Product implements MessageComponentInterface
                 GROUP BY p.id_product';
         $pcats = $this->dbConn->fetchRowMany($sql);
         $ids = '';
+        if (is_array($pcats) && !empty($pcats) {
         foreach ($pcats as $row) {
             $ids .= $row['id_product'].',';
+            }
         }
+
         $ids = rtrim($ids, ',');
 
         return $ids;
