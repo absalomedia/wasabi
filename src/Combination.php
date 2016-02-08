@@ -43,7 +43,7 @@ class Combination implements MessageComponentInterface
                 $id_product_attribute = $this->getAttribute($product, $choices);
                 Analog::log("Product combination: $id_product_attribute");
                 $combo_groups = $this->getCombination($id_product_attribute);
-                if (is_array($combo_groups) && $combo_groups) {
+                if (!empty($combo_groups) && is_array($combo_groups) && $combo_groups) {
                     foreach ($combo_groups as $k => $row) {
                         $combinations = $this->buildAttributes($id_product_attribute, $row);
                     }
@@ -72,6 +72,7 @@ class Combination implements MessageComponentInterface
 
     private function buildAttributes($id_product_attribute, $row)
     {
+        $combinations = array();
         $combinations[$row['id_product_attribute']]['id_product'] = (int) $row['id_product'];
         $combinations[$row['id_product_attribute']]['name'] = $row['product_name'];
         $combinations[$row['id_product_attribute']]['attributes_values'][$row['id_attribute_group']] = $row['attribute_name'];
@@ -156,7 +157,7 @@ class Combination implements MessageComponentInterface
         }
     }
 
-    private function getSpecificPriceData($id_product_attribute, $product, $now)
+    private function getSpecificPriceData($id_product_attribute, $id_product, $now)
     {
         $sql = 'SELECT * FROM '._DB_PREFIX_.'specific_price
                             WWHERE id_product = '.(int) $id_product.'
