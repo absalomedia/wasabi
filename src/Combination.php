@@ -171,7 +171,7 @@ class Combination implements MessageComponentInterface
     /**
      * @param string $now
      */
-    private function getSpecificPriceData($id_product_attribute, $product, $now)
+    private function getSpecificPriceData($id_product_attribute, $id_product, $now)
     {
         $sql = 'SELECT * FROM '._DB_PREFIX_.'specific_price
                             WWHERE id_product = '.(int) $id_product.'
