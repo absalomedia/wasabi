@@ -2,16 +2,16 @@
 
 namespace ABM\tests;
 
-use ABM\Wasabi\Product;
+use ABM\Wasabi\Prestashop;
 
 /**
- * @covers WS\Wasabi\Product
+ * @covers WS\Wasabi\Combination
  */
-class ProductTest extends \PHPUnit_Framework_TestCase
+class CombinationTest extends \PHPUnit_Framework_TestCase
 {
     public function testGetSubProtocolsReturnsArray()
     {
-        $null = new Product();
+        $null = new Prestashop();
         $this->assertInternalType('array', $null->getSubProtocols());
     }
 }
