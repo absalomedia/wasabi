@@ -47,7 +47,7 @@ class Prestashop implements MessageComponentInterface
                                     break;
                     case 'comb': $result = getCombinationData($data);
                                     break;
-                    case default: break;
+                    default:        break;
                 }
                 if (!empty($result)) {
                 $client->send(json_encode($result));
