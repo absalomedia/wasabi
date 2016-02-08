@@ -42,11 +42,11 @@ class Prestashop implements MessageComponentInterface
                 $data = substr($msg, strpos($msg,'|') + 1);
                 switch($type) {
                     case 'cart': { $result = getCartData($data);
-                                  break; }
+                                    break; }
                     case 'prod': { $result = getProductData($data);
-                                  break; }
+                                    break; }
                     case 'comb': { $result = getCombinationData($data);
-                                  break; }
+                                    break; }
                     case default: break;
 
                 }
@@ -96,9 +96,9 @@ class Prestashop implements MessageComponentInterface
 
 
 /**
-     * @param string $cart
-     * @param string $cust
-     */
+ * @param string $cart
+ * @param string $cust
+ */
     private function processFindCarts($cart, $cust)
     {
         $sql = 'SELECT DISTINCT pc.id_cart as id, DATE_FORMAT(pc.date_upd,"%a %D %b %Y, %l:%i %p") as timer from '._DB_PREFIX_.'cart as pc
@@ -284,7 +284,7 @@ class Prestashop implements MessageComponentInterface
     }
 
 
-   private function getProducts($category)
+    private function getProducts($category)
     {
         $product_ids = $this->getProductIDs($category);
         $products = $this->getProduct($product_ids);
