@@ -248,6 +248,7 @@ class Prestashop implements MessageComponentInterface
 
     /**
      * @param string $now
+     * @param null|string $id_product_attribute
      */
     private function getSpecificPriceData($id_product_attribute, $id_product, $now)
     {
@@ -267,6 +268,9 @@ class Prestashop implements MessageComponentInterface
         return $result;
     }
 
+    /**
+     * @param null|string $id_product_attribute
+     */
     private function getNumberSpecificPrice($id_product_attribute, $id_product)
     {
         $sql = 'SELECT COUNT(*) FROM '._DB_PREFIX_.'specific_price WHERE id_product = '.(int) $id_product.' AND id_product_attribute = 0';
