@@ -220,7 +220,9 @@ class Combination implements MessageComponentInterface
     {
         // The connection is closed, remove it, as we can no longer send it messages
         $this->clients->detach($conn);
+        if ($conn instanceof $resourceId) {
         Analog::log('Connection '.$conn->resourceId.' has disconnected');
+        }
     }
 
     public function onError(ConnectionInterface $conn, \Exception $e)
