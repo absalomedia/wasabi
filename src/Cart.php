@@ -49,6 +49,10 @@ class Cart implements MessageComponentInterface
             $client->send(json_encode($otherCarts));
     }
 
+    /**
+     * @param string $cart
+     * @param string $cust
+     */
     private function processFindCarts($cart, $cust)
     {
         $sql = 'SELECT DISTINCT pc.id_cart as id, DATE_FORMAT(pc.date_upd,"%a %D %b %Y, %l:%i %p") as timer from '._DB_PREFIX_.'cart as pc
