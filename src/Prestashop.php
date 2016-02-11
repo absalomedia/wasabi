@@ -68,7 +68,7 @@ class Prestashop implements MessageComponentInterface
                 $id_product_attribute = $this->getAttribute($product, $choices);
                 Analog::log("Product combination: $id_product_attribute");
                 $combo_groups = $this->getCombination($id_product_attribute);
-                if (! empty($combo_groups) && is_array($combo_groups) && $combo_groups) {
+                if (!empty($combo_groups) && is_array($combo_groups) && $combo_groups) {
                     foreach ($combo_groups as $k => $row) {
                         $combinations = $this->buildAttributes($id_product_attribute, $row);
                     }
@@ -183,7 +183,7 @@ class Prestashop implements MessageComponentInterface
             $combinations[$row['id_product_attribute']]['available_date'] = $row['available_date'];
         }
         $combinations[$row['id_product_attribute']]['image'] = $this->getComboImage($id_product_attribute);
-        $combinations[$row['id_product_attribute']]['final_price'] = $this->getFinalPrice($row, $specfic_price);
+        $combinations[$row['id_product_attribute']]['final_price'] = $this->getFinalPrice($row, $specific_price);
 
         return $combinations;
     }
