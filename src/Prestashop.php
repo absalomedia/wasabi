@@ -22,7 +22,7 @@ class Prestashop implements MessageComponentInterface
     _DB_NAME_
         );
         $log_file = 'wasabi.log';
-        Analog::handler(\Analog\Handler\File::init($log_file));
+        Analog::handler(\Analog\Handler\File::init($log_file),Analog::DEBUG);
     }
 
     public function onOpen(ConnectionInterface $conn)
