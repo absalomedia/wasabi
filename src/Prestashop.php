@@ -39,7 +39,7 @@ class Prestashop implements MessageComponentInterface
         foreach ($this->clients as $client) {
             if ($from == $client) {
                 $type = strtolower(substr($msg, 0, strpos($msg, '|')));
-                $data = substr($msg, strpos($msg,'|') + 1);
+                $data = substr($msg, strpos($msg, '|') + 1);
                 switch ($type) {
                     case 'cart': $result = $this->getCartData($data);
                                     break;
@@ -366,9 +366,7 @@ class Prestashop implements MessageComponentInterface
     {
         // The connection is closed, remove it, as we can no longer send it messages
         $this->clients->detach($conn);
-        if ($resourceId instanceof $conn) {
         Analog::log('Connection '.$conn->resourceId.' has disconnected');
-        }
     }
 
     public function onError(ConnectionInterface $conn, \Exception $e)
