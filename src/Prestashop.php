@@ -155,6 +155,8 @@ class Prestashop implements MessageComponentInterface
     private function buildAttributes($id_product_attribute, $row)
     {
         $combinations = array();
+        $combinationSet = array();
+
         $combinations[$row['id_product_attribute']]['id_product'] = (int) $row['id_product'];
         $combinations[$row['id_product_attribute']]['name'] = $row['product_name'];
         $combinations[$row['id_product_attribute']]['attributes_values'][$row['id_attribute_group']] = $row['attribute_name'];
@@ -231,6 +233,7 @@ class Prestashop implements MessageComponentInterface
      */
     private function getSpecificPrice($id_product_attribute, $id_product)
     {
+        $specific_price = array();
         if ($this->getNumberSpecificPrice($id_product_attribute, $id_product) > 0) {
             $result = $this->getSpecificPriceData($id_product_attribute, $id_product, date('Y-m-d H:i:s'));
             $specific_price['price'] = $result['price'];
@@ -363,7 +366,9 @@ class Prestashop implements MessageComponentInterface
     {
         // The connection is closed, remove it, as we can no longer send it messages
         $this->clients->detach($conn);
+        if ($resourceId instanceof $conn) {
         Analog::log('Connection '.$conn->resourceId.' has disconnected');
+        }
     }
 
     public function onError(ConnectionInterface $conn, \Exception $e)
