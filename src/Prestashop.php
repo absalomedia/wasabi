@@ -61,13 +61,14 @@ class Prestashop implements MessageComponentInterface
      */
     private function getCombinationData($data) {
         $product = substr($data, 0, strpos($data, ','));
+        $combinations = array();
                 $vars = explode(',', $data);
                 Analog::log("Product variables: $data");
                 $choices = array_slice($vars, 1);
                 $id_product_attribute = $this->getAttribute($product, $choices);
                 Analog::log("Product combination: $id_product_attribute");
                 $combo_groups = $this->getCombination($id_product_attribute);
-                if (!empty($combo_groups) && is_array($combo_groups) && $combo_groups) {
+                if (! empty($combo_groups) && is_array($combo_groups) && $combo_groups) {
                     foreach ($combo_groups as $k => $row) {
                         $combinations = $this->buildAttributes($id_product_attribute, $row);
                     }
@@ -156,6 +157,7 @@ class Prestashop implements MessageComponentInterface
     {
         $combinations = array();
         $combinationSet = array();
+        $specific_price = null;
 
         $combinations[$row['id_product_attribute']]['id_product'] = (int) $row['id_product'];
         $combinations[$row['id_product_attribute']]['name'] = $row['product_name'];
