@@ -3,5 +3,5 @@ languages:
    JavaScript: true
    Python: true
    PHP: true
-    mass_threshold: 40
+    mass_threshold: 65
    
