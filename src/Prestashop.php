@@ -202,14 +202,17 @@ class Prestashop implements MessageComponentInterface
 
     }
 
+    /**
+     * @param null|string $id_product_attribute
+     */
     private function getCombinationSpecificPrice($combinationSet, $row, $id_product_attribute) {
             // Call getSpecificPrice in order to set $combination_specific_price
                 if (!isset($combinationSet[(int) $row['id_product_attribute']])) {
                     $specific_price = $this->getSpecificPrice($id_product_attribute, $row['id_product']);
                     $combinationSet[(int) $row['id_product_attribute']] = true;
-                    return array ($combinationSet, $specific_price);
+                    return array($combinationSet, $specific_price);
                 } else {
-                    return array (false, null);
+                    return array(false, null);
                 }
     }
 
