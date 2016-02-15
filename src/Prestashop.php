@@ -159,31 +159,24 @@ class Prestashop implements MessageComponentInterface
         $combinationSet = array();
         $specific_price = null;
 
-        $combinations[$row['id_product_attribute']]['id_product'] = (int) $row['id_product'];
-        $combinations[$row['id_product_attribute']]['name'] = $row['product_name'];
-        $combinations[$row['id_product_attribute']]['attributes_values'][$row['id_attribute_group']] = $row['attribute_name'];
-        $combinations[$row['id_product_attribute']]['attributes'][] = (int) $row['id_attribute'];
-        $combinations[$row['id_product_attribute']]['base_price'] = (float) $row['base_price'];
-        $combinations[$row['id_product_attribute']]['price'] = (float) $row['price'];
+        $combinations['id_product'] = (int) $row['id_product'];
+        $combinations['name'] = $row['product_name'];
+        $combinations['attributes_values'][$row['id_attribute_group']] = $row['attribute_name'];
+        $combinations['attributes'][] = (int) $row['id_attribute'];
+        $combinations['base_price'] = (float) $row['base_price'];
+        $combinations['price'] = (float) $row['price'];
 
-                // Call getPriceStatic in order to set $combination_specific_price
-                if (!isset($combinationSet[(int) $row['id_product_attribute']])) {
-                    $specific_price = $this->getSpecificPrice($id_product_attribute, $row['id_product']);
-                    $combinationSet[(int) $row['id_product_attribute']] = true;
-                    $combinations[$row['id_product_attribute']]['specific_price'] = $specific_price;
-                }
-        $combinations[$row['id_product_attribute']]['ecotax'] = (float) $row['ecotax'];
-        $combinations[$row['id_product_attribute']]['weight'] = (float) $row['weight'];
-        $combinations[$row['id_product_attribute']]['quantity'] = (int) $row['quantity'];
-        $combinations[$row['id_product_attribute']]['reference'] = $row['reference'];
-        $combinations[$row['id_product_attribute']]['unit_impact'] = $row['unit_price_impact'];
-        $combinations[$row['id_product_attribute']]['minimal_quantity'] = $row['minimal_quantity'];
-        $combinations[$row['id_product_attribute']]['available_date'] = '';
-        if ($row['available_date'] != '0000-00-00') {
-            $combinations[$row['id_product_attribute']]['available_date'] = $row['available_date'];
-        }
-        $combinations[$row['id_product_attribute']]['image'] = $this->getComboImage($id_product_attribute);
-        $combinations[$row['id_product_attribute']]['final_price'] = $this->getFinalPrice($row, $specific_price);
+        list ($combinationSet[(int) $row['id_product_attribute']], $combinations['specific_price']) = $this->getCombinationSpecificPrice($combinationSet, $row, $id_product_attribute);
+
+        $combinations['ecotax'] = (float) $row['ecotax'];
+        $combinations['weight'] = (float) $row['weight'];
+        $combinations['quantity'] = (int) $row['quantity'];
+        $combinations['reference'] = $row['reference'];
+        $combinations['unit_impact'] = $row['unit_price_impact'];
+        $combinations['minimal_quantity'] = $row['minimal_quantity'];
+        $combinations['available_date'] = $this->getAvailableDate($row);
+        $combinations['image'] = $this->getComboImage($id_product_attribute);
+        $combinations['final_price'] = $this->getFinalPrice($row, $specific_price);
 
         return $combinations;
     }
@@ -198,6 +191,29 @@ class Prestashop implements MessageComponentInterface
 
         return $final_price;
     }
+
+
+    private function getAvailableDate($row) {
+        if ($row['available_date'] != '0000-00-00') {
+            return $row['available_date'];
+        } else {
+            return '';
+        }
+
+    }
+
+    private function getCombinationSpecificPrice($combinationSet, $row, $id_product_attribute) {
+            // Call getSpecificPrice in order to set $combination_specific_price
+                if (!isset($combinationSet[(int) $row['id_product_attribute']])) {
+                    $specific_price = $this->getSpecificPrice($id_product_attribute, $row['id_product']);
+                    $combinationSet[(int) $row['id_product_attribute']] = true;
+                    return array ($combinationSet, $specific_price);
+                } else {
+                    return array (false, null);
+                }
+    }
+
+
 
     /**
      * @param null|string $id_product_attribute
