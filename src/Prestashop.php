@@ -70,7 +70,7 @@ class Prestashop implements MessageComponentInterface
                 $combo_groups = $this->getCombination($id_product_attribute);
                 if (!empty($combo_groups) && is_array($combo_groups) && $combo_groups) {
                     foreach ($combo_groups as $k => $row) {
-                        $combinations = $this->buildAttributes($id_product_attribute, $row);
+                        $combinations = $this->buildAttributes($combinations, $id_product_attribute, $row);
                     }
                 }
         return $combinations;
@@ -153,9 +153,8 @@ class Prestashop implements MessageComponentInterface
     /**
      * @param null|string $id_product_attribute
      */
-    private function buildAttributes($id_product_attribute, $row)
+    private function buildAttributes($combinations, $id_product_attribute, $row)
     {
-        $combinations = array();
         $combinationSet = array();
         $specific_price = null;
 
@@ -361,10 +360,10 @@ class Prestashop implements MessageComponentInterface
      */
     private function getProduct($ids)
     {
-        $sql = 'SELECT p.id_product, p.id_supplier, p.ean13, p.upc, p.price, p.wholesale_price, p.on_sale, p.quantity, p.id_category_default, p.show_price, p.available_for_order, p.minimal_quantity, p.customizable,
+        $sqler = 'SELECT p.id_product, p.id_supplier, p.ean13, p.upc, p.price, p.wholesale_price, p.on_sale, p.quantity, p.id_category_default, 
+                    p.show_price, p.available_for_order, p.minimal_quantity, p.customizable,
                     p.out_of_stock, pl.link_rewrite, pl.name, i.id_image, il.legend,
-                    cl.name AS category_default,  cl.id_category AS cat_id,
-                    ps.price AS orderprice
+                    cl.name AS category_default,  cl.id_category AS cat_id, ps.price AS orderprice
                     FROM '._DB_PREFIX_.'product as p                 
                     LEFT JOIN '._DB_PREFIX_.'image AS i ON i.id_product = p.id_product 
                     LEFT JOIN '._DB_PREFIX_.'product_shop as ps ON ps.id_product = p.id_product
@@ -377,7 +376,7 @@ class Prestashop implements MessageComponentInterface
                     GROUP BY p.id_product
                     ORDER BY p.price ASC';
 
-        $result = $this->dbConn->fetchRowMany($sql);
+        $result = $this->dbConn->fetchRowMany($sqler);
 
         return $result;
     }
