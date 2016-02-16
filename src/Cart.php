@@ -2,8 +2,6 @@
 
 namespace ABM\Wasabi;
 
-use Ratchet\MessageComponentInterface;
-use Ratchet\ConnectionInterface;
 use Analog\Analog;
 
 class Cart 
