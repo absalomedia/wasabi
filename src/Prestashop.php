@@ -273,6 +273,7 @@ class Prestashop implements MessageComponentInterface
     /**
      * @param string $now
      * @param null|string $id_product_attribute
+     * @param string $id_product
      */
     private function getSpecificPriceData($id_product_attribute, $id_product, $now)
     {
