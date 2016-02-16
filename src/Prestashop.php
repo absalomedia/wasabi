@@ -250,6 +250,7 @@ class Prestashop implements MessageComponentInterface
 
     /**
      * @param null|string $id_product_attribute
+     * @param string $id_product
      */
     private function getSpecificPrice($id_product_attribute, $id_product)
     {
@@ -293,6 +294,7 @@ class Prestashop implements MessageComponentInterface
 
     /**
      * @param null|string $id_product_attribute
+     * @param string $id_product
      */
     private function getNumberSpecificPrice($id_product_attribute, $id_product)
     {
@@ -324,7 +326,9 @@ class Prestashop implements MessageComponentInterface
         }
     }
 
-
+    /**
+     * @param string $category
+     */
     private function getProducts($category)
     {
         $product_ids = $this->getProductIDs($category);
@@ -333,6 +337,9 @@ class Prestashop implements MessageComponentInterface
         return $products;
     }
 
+    /**
+     * @param string $category
+     */
     private function getProductIDs($category)
     {
         $sql = 'SELECT DISTINCT p.id_product
