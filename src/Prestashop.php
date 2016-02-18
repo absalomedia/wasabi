@@ -158,21 +158,26 @@ class Prestashop implements MessageComponentInterface
         $combinationSet = array();
         $specific_price = null;
 
-        $combinations['id_product'] = (int) $row['id_product'];
         $combinations['name'] = $row['product_name'];
+        $typcheck = array("id_product", "price", "base_price", "price", "ecotax","weight","quantity","unit_impact","minimal_quantity");
+
+        foreach ($typcheck as $key=>$value) 
+        { 
+            if ( (strpos($value, 'price') !== false) || (strpos($value, 'weight') !== false) || (strpos($value, 'ecotax') !== false) || (strpos($value, 'impact') !== false) )
+            {
+                $combinations[$value] = (float) $row[$value]; 
+            } else {
+                $combinations[$value] = (int) $row[$value]; 
+            }
+        }
+
+        $combinations['id_product'] = (int) $row['id_product'];
         $combinations['attributes_values'][$row['id_attribute_group']] = $row['attribute_name'];
         $combinations['attributes'][] = (int) $row['id_attribute'];
-        $combinations['base_price'] = (float) $row['base_price'];
-        $combinations['price'] = (float) $row['price'];
 
         list ($combinationSet[(int) $row['id_product_attribute']], $combinations['specific_price']) = $this->getCombinationSpecificPrice($combinationSet, $row, $id_product_attribute);
 
-        $combinations['ecotax'] = (float) $row['ecotax'];
-        $combinations['weight'] = (float) $row['weight'];
-        $combinations['quantity'] = (int) $row['quantity'];
         $combinations['reference'] = $row['reference'];
-        $combinations['unit_impact'] = $row['unit_price_impact'];
-        $combinations['minimal_quantity'] = $row['minimal_quantity'];
         $combinations['available_date'] = $this->getAvailableDate($row);
         $combinations['image'] = $this->getComboImage($id_product_attribute);
         $combinations['final_price'] = $this->getFinalPrice($row, $specific_price);
@@ -222,16 +227,17 @@ class Prestashop implements MessageComponentInterface
      */
     private function getCombination($id_product_attribute)
     {
-        $sql = 'SELECT ag.id_attribute_group, ag.is_color_group, agl.name AS group_name, agl.public_name AS public_group_name,
+        $sql = 'SELECT pl.name as product_name, pa.id_product, ag.id_attribute_group, ag.is_color_group, agl.name AS group_name, agl.public_name AS public_group_name,
                     a.id_attribute, al.name AS attribute_name, a.color AS attribute_color, pas.id_product_attribute,
                     IFNULL(stock.quantity, 0) as quantity, pas.price, pas.ecotax, pas.weight,
-                    pas.default_on, pa.reference, pas.unit_price_impact,
+                    pas.default_on, pa.reference, pas.unit_price_impact as unit_impact,
                     pas.minimal_quantity, pas.available_date, ag.group_type
                 FROM '._DB_PREFIX_.'product_attribute pa
                  INNER JOIN '._DB_PREFIX_.'product_attribute_shop pas
                     ON (pas.id_product_attribute = pa.id_product_attribute AND pas.id_shop = 1)
                  LEFT JOIN '._DB_PREFIX_.'stock_available stock
                         ON (stock.id_product = pa.id_product AND stock.id_product_attribute = IFNULL(pa.id_product_attribute, 0) AND stock.id_shop = 1  )
+                LEFT JOIN '._DB_PREFIX_.'product_lang pl ON ( pl.id_product = pa.id_product)
                 LEFT JOIN '._DB_PREFIX_.'product_attribute_combination pac ON (pac.id_product_attribute = pa.id_product_attribute)
                 LEFT JOIN '._DB_PREFIX_.'attribute a ON (a.id_attribute = pac.id_attribute)
                 LEFT JOIN '._DB_PREFIX_.'attribute_group ag ON (ag.id_attribute_group = a.id_attribute_group)
