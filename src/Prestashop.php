@@ -189,8 +189,7 @@ class Prestashop implements MessageComponentInterface
 
 
     private function getAvailableDate($row) {
-        $dater = '';
-        ($row['available_date'] != '0000-00-00') ? $dater = $row['available_date'] : ;
+        ($row['available_date'] != '0000-00-00') ? $dater = $row['available_date'] : $dater = '';
         return $dater;
    }
 
@@ -312,8 +311,7 @@ class Prestashop implements MessageComponentInterface
                         LEFT JOIN '._DB_PREFIX_.'image i ON (i.id_image = pai.id_image)
                         WHERE pai.id_product_attribute = '.(int) $id_product_attribute.' ORDER by i.position';
         $image = $this->dbConn->fetchColumn($sql);
-        $imager = -1; 
-        ($image !== false) ? $imager = (int) $image : ;
+        ($image !== false) ? $imager = (int) $image : $imager = -1;
         return $imager;
     }
 
