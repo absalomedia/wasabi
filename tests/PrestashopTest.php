@@ -7,7 +7,7 @@ use ABM\Wasabi\Prestashop;
 /**
  * @covers WS\Wasabi\Combination
  */
-class CombinationTest extends \PHPUnit_Framework_TestCase
+class PrestashopTest extends \PHPUnit_Framework_TestCase
 {
     public function testGetSubProtocolsReturnsArray()
     {
