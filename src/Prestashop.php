@@ -67,7 +67,7 @@ class Prestashop implements MessageComponentInterface
                 $choices = array_slice($vars, 1);
                 $id_product_attribute = $this->getAttribute($product, $choices);
                 Analog::log("Product combination: $id_product_attribute");
-                $combo_groups = $this->getCombination($id_product_attribute);
+                $combo_groups = $this->getCombination($product,$id_product_attribute);
                 if (!empty($combo_groups) && is_array($combo_groups) && $combo_groups) {
                     foreach ($combo_groups as $k => $row) {
                         $combinations = $this->buildAttributes($combinations, $id_product_attribute, $row);
@@ -203,46 +203,55 @@ class Prestashop implements MessageComponentInterface
                 }
     }
 
-
-
     /**
      * @param null|string $id_product_attribute
      */
-    private function getCombination($id_product_attribute)
+    private function getCombination($product,$id_product_attribute)
     {
-       $sql = 'SELECT ag.`id_attribute_group`, ag.`is_color_group`, agl.`name` AS group_name, agl.`public_name` AS public_group_name,
-                    a.`id_attribute`, al.`name` AS attribute_name, a.`color` AS attribute_color, pas.`id_product_attribute`,
-                    IFNULL(stock.quantity, 0) as quantity, pc.price as base_price, pc.id_product, pas.`price`, pas.`ecotax`, pas.`weight`,
-                    pas.`default_on`, pa.`reference`, pas.`unit_price_impact`, pl.name as product_name,
-                    pas.`minimal_quantity`, pas.`available_date`, ag.`group_type`
-                FROM `'._DB_PREFIX_.'product_attribute` pa
-                 INNER JOIN '._DB_PREFIX_.'product_attribute_shop pas
-                    ON (pas.id_product_attribute = pa.id_product_attribute AND pas.id_shop = 1)
-                 LEFT JOIN '._DB_PREFIX_.'stock_available stock
-                        ON (stock.id_product = pa.id_product AND stock.id_product_attribute = IFNULL(`pa`.id_product_attribute, 0) AND stock.id_shop = 1  )
-                LEFT JOIN `'._DB_PREFIX_.'product_attribute_combination` pac ON (pac.`id_product_attribute` = pa.`id_product_attribute`)
-                LEFT JOIN `'._DB_PREFIX_.'product` pc ON (pa.`id_product` = pc.`id_product`)
-                LEFT JOIN `'._DB_PREFIX_.'product_lang` pl ON (pc.`id_product` = pl.`id_product`)
-                LEFT JOIN `'._DB_PREFIX_.'attribute` a ON (a.`id_attribute` = pac.`id_attribute`)
-                LEFT JOIN `'._DB_PREFIX_.'attribute_group` ag ON (ag.`id_attribute_group` = a.`id_attribute_group`)
-                LEFT JOIN `'._DB_PREFIX_.'attribute_lang` al ON (a.`id_attribute` = al.`id_attribute`)
-                LEFT JOIN `'._DB_PREFIX_.'attribute_group_lang` agl ON (ag.`id_attribute_group` = agl.`id_attribute_group`)
-                 INNER JOIN '._DB_PREFIX_.'attribute_shop attribute_shop
-                    ON (attribute_shop.id_attribute = a.id_attribute AND attribute_shop.id_shop = 1)
-                WHERE pas.`id_product_attribute`= '.(int)$id_product_attribute.'
-                GROUP BY id_attribute_group, id_product_attribute
-                ORDER BY ag.`position` ASC, a.`position` ASC, agl.`name` ASC';
+        $combo = $this->getAttributeBase($id_product_attribute);
 
-        $combo_groups = $this->dbConn->fetchRowMany($sql);
-
-        return $combo_groups;
+        if (is_array($combo))
+        {
+         foreach($combo as $key => $value)
+        {
+            $combo['base_price'] = (float) $this->getOrderPrice($product);
+            $combo['quantity'] = (int) $this->getStockQuantity($product,$id_product_attribute);
+            $combo['id_product'] = (int) $product;
+            $combo['product_name'] = (int) $this->getProductName($product);
+            $pricing = $this->getAttributePricing($id_product_attribute);
+            foreach($pricing as $ki => $val)
+            {   
+              $combo[$ki] = $val;
+            }
+        
+        return $combo;
     }
 
-    public function getAttributeBase($attribute) {
-       $sql = 'SELECT al.*
+    private function getAttributeBase($attribute) {
+       $sql = 'SELECT ag.id_attribute_group, ag.is_color_group, agl.name AS group_name, agl.public_name AS public_group_name,
+                    a.id_attribute, al.name AS attribute_name, a.color AS attribute_color, ag.group_type, pac.id_product_attribute
             FROM '._DB_PREFIX_.'product_attribute_combination pac
-            JOIN '._DB_PREFIX_.'attribute_lang al ON (pac.id_attribute = al.id_attribute AND al.id_lang=1)
+            LEFT JOIN '._DB_PREFIX_.'attribute a ON (a.id_attribute = pac.id_attribute)
+            LEFT JOIN  '._DB_PREFIX_.'attribute_group ag ON (ag.id_attribute_group = a.id_attribute_group)
+            LEFT JOIN '._DB_PREFIX_.'attribute_lang al ON (a.id_attribute = al.id_attribute)
+            LEFT JOIN '._DB_PREFIX_.'attribute_group_lang agl ON (ag.id_attribute_group = agl.id_attribute_group)
             WHERE pac.id_product_attribute='.(int) $attribute;
+        $result = $this->dbConn->fetchRowMany($sql);
+
+        return $result;
+    }
+
+    private function getStockQuantity($product, $attribute) {
+        $sql = 'SELECT stock.quantity from '._DB_PREFIX_.'stock_available as stock WHERE stock.id_product = '.(int) $product.'AND stock.id_product_attribute = '(int) $attribute;
+        $result = $this->dbConn->fetchValue($sql);
+        return $result;
+    }
+
+
+    private function getAttributePricing($attribute) {
+        $sql = 'SELECT pas.price, pas.ecotax, pas.weight, pas.default_on, pa.reference, pas.unit_price_impact, 
+                pas.minimal_quantity, pas.available_date FROM '._DB_PREFIX_.'product_attribute_shop pas 
+                WHERE pas.id_product_attribute = '(int) $attribute;
         $result = $this->dbConn->fetchRowMany($sql);
 
         return $result;
@@ -391,6 +400,12 @@ class Prestashop implements MessageComponentInterface
 
     private function getOrderPrice($product) {
         $sql = 'SELECT ps.price from '._DB_PREFIX_.'product_shop as ps WHERE ps.id_product = '.(int) $product;
+        $result = $this->dbConn->fetchValue($sql);
+        return $result;
+    }
+
+    private function getProductName($product) {
+        $sql = 'SELECT pl.name from '._DB_PREFIX_.'product_lang as pl WHERE pl.id_product = '.(int) $product;
         $result = $this->dbConn->fetchValue($sql);
         return $result;
     }
