@@ -205,6 +205,7 @@ class Prestashop implements MessageComponentInterface
 
     /**
      * @param null|string $id_product_attribute
+     * @param string $product
      */
     private function getCombination($product,$id_product_attribute)
     {
@@ -228,6 +229,9 @@ class Prestashop implements MessageComponentInterface
         return $combo;
     }
 
+    /**
+     * @param null|string $attribute
+     */
     private function getAttributeBase($attribute) {
        $sql = 'SELECT ag.id_attribute_group, ag.is_color_group, agl.name AS group_name, agl.public_name AS public_group_name,
                     a.id_attribute, al.name AS attribute_name, a.color AS attribute_color, ag.group_type, pac.id_product_attribute
@@ -242,6 +246,9 @@ class Prestashop implements MessageComponentInterface
         return $result;
     }
 
+    /**
+     * @param null|string $attribute
+     */
     private function getStockQuantity($product, $attribute) {
         $sql = 'SELECT stock.quantity from '._DB_PREFIX_.'stock_available as stock WHERE stock.id_product = '.(int) $product.'AND stock.id_product_attribute = '.(int) $attribute;
         $result = $this->dbConn->fetchColumn($sql);
@@ -249,6 +256,9 @@ class Prestashop implements MessageComponentInterface
     }
 
 
+    /**
+     * @param null|string $attribute
+     */
     private function getAttributePricing($attribute) {
         $sql = 'SELECT pas.price, pas.ecotax, pas.weight, pas.default_on, pa.reference, pas.unit_price_impact, 
                 pas.minimal_quantity, pas.available_date FROM '._DB_PREFIX_.'product_attribute_shop pas 
