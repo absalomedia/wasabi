@@ -385,6 +385,7 @@ class Prestashop implements MessageComponentInterface
             $result['category_default'] = $this->getProductCat($value['cat_id']);
         }
         return $result;
+        }
     }
 
     private function getOrderPrice($product) {
