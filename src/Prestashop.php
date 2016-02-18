@@ -220,10 +220,11 @@ class Prestashop implements MessageComponentInterface
             $combo['product_name'] = (int) $this->getProductName($product);
             $pricing = $this->getAttributePricing($id_product_attribute);
             foreach($pricing as $ki => $val)
-            {   
-              $combo[$ki] = $val;
+                {   
+                $combo[$ki] = $val;
+                }
             }
-        
+        }
         return $combo;
     }
 
