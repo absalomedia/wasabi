@@ -124,9 +124,7 @@ class Prestashop implements MessageComponentInterface
             }
 
             return $results;
-        } else {
-            return;
-        }
+        } 
     }
 
 
@@ -185,24 +183,14 @@ class Prestashop implements MessageComponentInterface
 
     private function getFinalPrice($row, $specific_price)
     {
-        if ($specific_price['price'] != 0) {
-            $final_price = (((float) $row['base_price'] + (float) $row['price']) * (((int) 100 - $specific_price['reduction_percent']) / 100));
-        } else {
-            $final_price = (float) $row['base_price'] + (float) $row['price'];
-        }
-
+        $specific_price['price'] != 0 ? $final_price = (((float) $row['base_price'] + (float) $row['price']) * (((int) 100 - $specific_price['reduction_percent']) / 100)) : $final_price = (float) $row['base_price'] + (float) $row['price'];
         return $final_price;
     }
 
 
     private function getAvailableDate($row) {
-        if ($row['available_date'] != '0000-00-00') {
-            return $row['available_date'];
-        } else {
-            return '';
-        }
-
-    }
+        $row['available_date'] != '0000-00-00' ? return $row['available_date'] : return '';
+   }
 
     /**
      * @param null|string $id_product_attribute
@@ -324,11 +312,7 @@ class Prestashop implements MessageComponentInterface
                         LEFT JOIN '._DB_PREFIX_.'image i ON (i.id_image = pai.id_image)
                         WHERE pai.id_product_attribute = '.(int) $id_product_attribute.' ORDER by i.position';
         $image = $this->dbConn->fetchColumn($sql);
-        if ($image !== false) {
-            return (int) $image;
-        } else {
-            return -1;
-        }
+        $image !== false) ? return (int) $image : return -1;
     }
 
     /**
