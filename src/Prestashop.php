@@ -243,7 +243,7 @@ class Prestashop implements MessageComponentInterface
 
     private function getStockQuantity($product, $attribute) {
         $sql = 'SELECT stock.quantity from '._DB_PREFIX_.'stock_available as stock WHERE stock.id_product = '.(int) $product.'AND stock.id_product_attribute = '(int) $attribute;
-        $result = $this->dbConn->fetchValue($sql);
+        $result = $this->dbConn->fetchColumn($sql);
         return $result;
     }
 
@@ -391,7 +391,7 @@ class Prestashop implements MessageComponentInterface
          foreach($result as $key => $value)
         {
             $result['cat_id'] = $value['id_category_default'];
-            $result['orderprice'] = $this->getOrderPrice($product);
+            $result['orderprice'] = $this->getOrderPrice($value['id_product']);
             $result['category_default'] = $this->getProductCat($value['id_category_default']);
         }
         return $result;
@@ -400,19 +400,19 @@ class Prestashop implements MessageComponentInterface
 
     private function getOrderPrice($product) {
         $sql = 'SELECT ps.price from '._DB_PREFIX_.'product_shop as ps WHERE ps.id_product = '.(int) $product;
-        $result = $this->dbConn->fetchValue($sql);
+        $result = $this->dbConn->fetchColumn($sql);
         return $result;
     }
 
     private function getProductName($product) {
         $sql = 'SELECT pl.name from '._DB_PREFIX_.'product_lang as pl WHERE pl.id_product = '.(int) $product;
-        $result = $this->dbConn->fetchValue($sql);
+        $result = $this->dbConn->fetchColumn($sql);
         return $result;
     }
 
     private function getProductCat($category) {
         $sql = 'SELECT cl.name from '._DB_PREFIX_.'category_lang as cl WHERE cl.id_category = '.(int) $category;
-        $result = $this->dbConn->fetchValue($sql);
+        $result = $this->dbConn->fetchColumn($sql);
         return $result;
     }
 
