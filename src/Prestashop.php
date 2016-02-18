@@ -363,7 +363,7 @@ class Prestashop implements MessageComponentInterface
      */
     private function getProduct($ids)
     {
-        $sql = 'SELECT p.id_product, p.id_supplier, p.ean13, p.upc, p.price, p.wholesale_price, p.on_sale, p.quantity, p.id_category_default, p.id_category_default AS cat_id,
+        $sql = 'SELECT p.id_product, p.id_supplier, p.ean13, p.upc, p.price, p.wholesale_price, p.on_sale, p.quantity, p.id_category_default,
                     p.show_price, p.available_for_order, p.minimal_quantity, p.customizable,
                     p.out_of_stock, pl.link_rewrite, pl.name, i.id_image, il.legend
                     FROM '._DB_PREFIX_.'product as p                 
@@ -381,8 +381,9 @@ class Prestashop implements MessageComponentInterface
         {
          foreach($result as $key => $value)
         {
+            $result['cat_id'] = $value['id_category_default'];
             $result['orderprice'] = $this->getOrderPrice($product);
-            $result['category_default'] = $this->getProductCat($value['cat_id']);
+            $result['category_default'] = $this->getProductCat($value['id_category_default']);
         }
         return $result;
         }
