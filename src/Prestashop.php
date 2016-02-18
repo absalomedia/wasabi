@@ -170,8 +170,6 @@ class Prestashop implements MessageComponentInterface
                 $combinations[$value] = (int) $row[$value]; 
             }
         }
-
-        $combinations['id_product'] = (int) $row['id_product'];
         $combinations['attributes_values'][$row['id_attribute_group']] = $row['attribute_name'];
         $combinations['attributes'][] = (int) $row['id_attribute'];
 
