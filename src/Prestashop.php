@@ -253,7 +253,7 @@ class Prestashop implements MessageComponentInterface
 
     /**
      * @param null|string $attribute
-     * @param string $product
+     * @param string      $product
      */
     private function getStockQuantity($product, $attribute)
     {
