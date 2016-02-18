@@ -387,13 +387,13 @@ class Prestashop implements MessageComponentInterface
         return $result;
     }
 
-    public function getOrderPrice($product) {
+    private function getOrderPrice($product) {
         $sql = 'SELECT ps.price from '._DB_PREFIX_.'product_shop as ps WHERE ps.id_product = '.(int) $product;
         $result = $this->dbConn->fetchValue($sql);
         return $result;
     }
 
-    public function getProductCat($category) {
+    private function getProductCat($category) {
         $sql = 'SELECT cl.name from '._DB_PREFIX_.'category_lang as cl WHERE cl.id_category = '.(int) $category;
         $result = $this->dbConn->fetchValue($sql);
         return $result;
