@@ -3,12 +3,12 @@
 require 'vendor/autoload.php';
 
 // Your shell script
-use Ratchet\WebSocket\WsServer;
+use ABM\Wasabi\Prestashop;
 use Ratchet\Http\HttpServer;
 use Ratchet\Server\IoServer;
-use ABM\Wasabi\Prestashop;
+use Ratchet\WebSocket\WsServer;
 
-    $wasabi = new WsServer(new Prestashop());
+$wasabi = new WsServer(new Prestashop());
     $wasabi->disableVersion(0); // old, bad, protocol version
     $wasabi->setEncodingChecks(false);
 

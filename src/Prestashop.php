@@ -2,9 +2,9 @@
 
 namespace ABM\Wasabi;
 
-use Ratchet\MessageComponentInterface;
-use Ratchet\ConnectionInterface;
 use Analog\Analog;
+use Ratchet\ConnectionInterface;
+use Ratchet\MessageComponentInterface;
 
 class Prestashop implements MessageComponentInterface
 {
@@ -50,7 +50,7 @@ class Prestashop implements MessageComponentInterface
                     default:        break;
                 }
                 if (!empty($result)) {
-                $client->send(json_encode($result));
+                    $client->send(json_encode($result));
                 }
             }
         }
@@ -59,55 +59,60 @@ class Prestashop implements MessageComponentInterface
     /**
      * @param string $data
      */
-    private function getCombinationData($data) {
+    private function getCombinationData($data)
+    {
         $product = substr($data, 0, strpos($data, ','));
-        $combinations = array();
-                $vars = explode(',', $data);
-                Analog::log("Product variables: $data");
-                $choices = array_slice($vars, 1);
-                $id_product_attribute = $this->getAttribute($product, $choices);
-                Analog::log("Product combination: $id_product_attribute");
-                $combo_groups = $this->getCombination($product,$id_product_attribute);
-                if (!empty($combo_groups) && is_array($combo_groups) && $combo_groups) {
-                    foreach ($combo_groups as $k => $row) {
-                        $combinations = $this->buildAttributes($combinations, $id_product_attribute, $row);
-                    }
-                }
+        $combinations = [];
+        $vars = explode(',', $data);
+        Analog::log("Product variables: $data");
+        $choices = array_slice($vars, 1);
+        $id_product_attribute = $this->getAttribute($product, $choices);
+        Analog::log("Product combination: $id_product_attribute");
+        $combo_groups = $this->getCombination($product, $id_product_attribute);
+        if (!empty($combo_groups) && is_array($combo_groups) && $combo_groups) {
+            foreach ($combo_groups as $k => $row) {
+                $combinations = $this->buildAttributes($combinations, $id_product_attribute, $row);
+            }
+        }
+
         return $combinations;
     }
 
     /**
      * @param string $data
      */
-    private function getProductData($data) {
-                $category = (int) substr($data, 0, strpos($data, ','));
-                if ($category != 0) {
-                    $products = $this->getProducts($category);
-                } else {
-                    $product = substr($data, strpos($data, ',') + 1);
-                    $products = $this->getProducts($product);
-                }
-                Analog::log("Product variables: $data");
+    private function getProductData($data)
+    {
+        $category = (int) substr($data, 0, strpos($data, ','));
+        if ($category != 0) {
+            $products = $this->getProducts($category);
+        } else {
+            $product = substr($data, strpos($data, ',') + 1);
+            $products = $this->getProducts($product);
+        }
+        Analog::log("Product variables: $data");
+
         return $products;
     }
 
     /**
      * @param string $data
      */
-    private function getCartData($data) {
+    private function getCartData($data)
+    {
         $cart = substr($data, 0, strpos($data, ','));
         $cust = substr($data, strpos($data, ',') + 1);
 
         Analog::log("Cart & customer variables: $data");
         $otherCarts = $this->processFindCarts($cart, $cust);
+
         return $otherCarts;
     }
 
-
-/**
- * @param string $cart
- * @param string $cust
- */
+    /**
+     * @param string $cart
+     * @param string $cust
+     */
     private function processFindCarts($cart, $cust)
     {
         $sql = 'SELECT DISTINCT pc.id_cart as id, DATE_FORMAT(pc.date_upd,"%a %D %b %Y, %l:%i %p") as timer from '._DB_PREFIX_.'cart as pc
@@ -124,9 +129,8 @@ class Prestashop implements MessageComponentInterface
             }
 
             return $results;
-        } 
+        }
     }
-
 
     /**
      * @param string $product
@@ -153,21 +157,19 @@ class Prestashop implements MessageComponentInterface
      */
     private function buildAttributes($combinations, $id_product_attribute, $row)
     {
-        $combinationSet = array();
+        $combinationSet = [];
         $specific_price = null;
 
         $combinations['name'] = $row['product_name'];
-        $typcheck = array("id_product", "price", "base_price", "price", "ecotax", "weight", "quantity", "unit_impact", "minimal_quantity");
+        $typcheck = ['id_product', 'price', 'base_price', 'price', 'ecotax', 'weight', 'quantity', 'unit_impact', 'minimal_quantity'];
 
-        foreach ($typcheck as $key=>$value) 
-        { 
+        foreach ($typcheck as $key => $value) {
             ((strpos($value, 'price') !== false) || (strpos($value, 'weight') !== false) || (strpos($value, 'ecotax') !== false) || (strpos($value, 'impact') !== false)) ? $combinations[$value] = (float) $row[$value] : $combinations[$value] = (int) $row[$value];
-            
         }
         $combinations['attributes_values'][$row['id_attribute_group']] = $row['attribute_name'];
         $combinations['attributes'][] = (int) $row['id_attribute'];
 
-        list ($combinationSet[(int) $row['id_product_attribute']], $combinations['specific_price']) = $this->getCombinationSpecificPrice($combinationSet, $row, $id_product_attribute);
+        list($combinationSet[(int) $row['id_product_attribute']], $combinations['specific_price']) = $this->getCombinationSpecificPrice($combinationSet, $row, $id_product_attribute);
 
         $combinations['reference'] = $row['reference'];
         $combinations['available_date'] = $this->getAvailableDate($row);
@@ -180,60 +182,63 @@ class Prestashop implements MessageComponentInterface
     private function getFinalPrice($row, $specific_price)
     {
         $specific_price['price'] != 0 ? $final_price = (((float) $row['base_price'] + (float) $row['price']) * (((int) 100 - $specific_price['reduction_percent']) / 100)) : $final_price = (float) $row['base_price'] + (float) $row['price'];
+
         return $final_price;
     }
 
-
-    private function getAvailableDate($row) {
+    private function getAvailableDate($row)
+    {
         ($row['available_date'] != '0000-00-00') ? $dater = $row['available_date'] : $dater = '';
+
         return $dater;
-   }
+    }
 
     /**
      * @param null|string $id_product_attribute
      */
-    private function getCombinationSpecificPrice($combinationSet, $row, $id_product_attribute) {
-            // Call getSpecificPrice in order to set $combination_specific_price
+    private function getCombinationSpecificPrice($combinationSet, $row, $id_product_attribute)
+    {
+        // Call getSpecificPrice in order to set $combination_specific_price
                 if (!isset($combinationSet[(int) $row['id_product_attribute']])) {
                     $specific_price = $this->getSpecificPrice($id_product_attribute, $row['id_product']);
                     $combinationSet[(int) $row['id_product_attribute']] = true;
-                    return array($combinationSet, $specific_price);
+
+                    return [$combinationSet, $specific_price];
                 } else {
-                    return array(false, null);
+                    return [false, null];
                 }
     }
 
     /**
      * @param null|string $id_product_attribute
-     * @param string $product
+     * @param string      $product
      */
-    private function getCombination($product,$id_product_attribute)
+    private function getCombination($product, $id_product_attribute)
     {
         $combo = $this->getAttributeBase($id_product_attribute);
 
-        if (is_array($combo))
-        {
-         foreach($combo as $key => $value)
-        {
-            $combo['base_price'] = (float) $this->getOrderPrice($product);
-            $combo['quantity'] = (int) $this->getStockQuantity($product,$id_product_attribute);
-            $combo['id_product'] = (int) $product;
-            $combo['product_name'] = (int) $this->getProductName($product);
-            $pricing = $this->getAttributePricing($id_product_attribute);
-            foreach($pricing as $ki => $val)
-                {   
-                $combo[$ki] = $val;
+        if (is_array($combo)) {
+            foreach ($combo as $key => $value) {
+                $combo['base_price'] = (float) $this->getOrderPrice($product);
+                $combo['quantity'] = (int) $this->getStockQuantity($product, $id_product_attribute);
+                $combo['id_product'] = (int) $product;
+                $combo['product_name'] = (int) $this->getProductName($product);
+                $pricing = $this->getAttributePricing($id_product_attribute);
+                foreach ($pricing as $ki => $val) {
+                    $combo[$ki] = $val;
                 }
             }
         }
+
         return $combo;
     }
 
     /**
      * @param null|string $attribute
      */
-    private function getAttributeBase($attribute) {
-       $sql = 'SELECT ag.id_attribute_group, ag.is_color_group, agl.name AS group_name, agl.public_name AS public_group_name,
+    private function getAttributeBase($attribute)
+    {
+        $sql = 'SELECT ag.id_attribute_group, ag.is_color_group, agl.name AS group_name, agl.public_name AS public_group_name,
                     a.id_attribute, al.name AS attribute_name, a.color AS attribute_color, ag.group_type, pac.id_product_attribute
             FROM '._DB_PREFIX_.'product_attribute_combination pac
             LEFT JOIN '._DB_PREFIX_.'attribute a ON (a.id_attribute = pac.id_attribute)
@@ -249,17 +254,19 @@ class Prestashop implements MessageComponentInterface
     /**
      * @param null|string $attribute
      */
-    private function getStockQuantity($product, $attribute) {
+    private function getStockQuantity($product, $attribute)
+    {
         $sql = 'SELECT stock.quantity from '._DB_PREFIX_.'stock_available as stock WHERE stock.id_product = '.(int) $product.'AND stock.id_product_attribute = '.(int) $attribute;
         $result = $this->dbConn->fetchColumn($sql);
+
         return $result;
     }
-
 
     /**
      * @param null|string $attribute
      */
-    private function getAttributePricing($attribute) {
+    private function getAttributePricing($attribute)
+    {
         $sql = 'SELECT pas.price, pas.ecotax, pas.weight, pas.default_on, pa.reference, pas.unit_price_impact, 
                 pas.minimal_quantity, pas.available_date FROM '._DB_PREFIX_.'product_attribute_shop pas 
                 WHERE pas.id_product_attribute = '.(int) $attribute;
@@ -270,11 +277,11 @@ class Prestashop implements MessageComponentInterface
 
     /**
      * @param null|string $id_product_attribute
-     * @param string $id_product
+     * @param string      $id_product
      */
     private function getSpecificPrice($id_product_attribute, $id_product)
     {
-        $specific_price = array();
+        $specific_price = [];
         if ($this->getNumberSpecificPrice($id_product_attribute, $id_product) > 0) {
             $result = $this->getSpecificPriceData($id_product_attribute, $id_product, date('Y-m-d H:i:s'));
             $specific_price['price'] = $result['price'];
@@ -287,11 +294,10 @@ class Prestashop implements MessageComponentInterface
         }
     }
 
-
     /**
-     * @param string $now
+     * @param string      $now
      * @param null|string $id_product_attribute
-     * @param string $id_product
+     * @param string      $id_product
      */
     private function getSpecificPriceData($id_product_attribute, $id_product, $now)
     {
@@ -313,7 +319,7 @@ class Prestashop implements MessageComponentInterface
 
     /**
      * @param null|string $id_product_attribute
-     * @param string $id_product
+     * @param string      $id_product
      */
     private function getNumberSpecificPrice($id_product_attribute, $id_product)
     {
@@ -339,6 +345,7 @@ class Prestashop implements MessageComponentInterface
                         WHERE pai.id_product_attribute = '.(int) $id_product_attribute.' ORDER by i.position';
         $image = $this->dbConn->fetchColumn($sql);
         ($image !== false) ? $imager = (int) $image : $imager = -1;
+
         return $imager;
     }
 
@@ -368,8 +375,8 @@ class Prestashop implements MessageComponentInterface
         $pcats = $this->dbConn->fetchRowMany($sql);
         $ids = '';
         if (is_array($pcats) && (!empty($pcats))) {
-        foreach ($pcats as $row) {
-            $ids .= $row['id_product'].',';
+            foreach ($pcats as $row) {
+                $ids .= $row['id_product'].',';
             }
         }
 
@@ -397,36 +404,40 @@ class Prestashop implements MessageComponentInterface
 
         $result = $this->dbConn->fetchRowMany($sql);
 
-        if (is_array($result))
-        {
-         foreach($result as $key => $value)
-        {
-            $result['cat_id'] = $value['id_category_default'];
-            $result['orderprice'] = $this->getOrderPrice($value['id_product']);
-            $result['category_default'] = $this->getProductCat($value['id_category_default']);
-        }
-        return $result;
+        if (is_array($result)) {
+            foreach ($result as $key => $value) {
+                $result['cat_id'] = $value['id_category_default'];
+                $result['orderprice'] = $this->getOrderPrice($value['id_product']);
+                $result['category_default'] = $this->getProductCat($value['id_category_default']);
+            }
+
+            return $result;
         }
     }
 
-    private function getOrderPrice($product) {
+    private function getOrderPrice($product)
+    {
         $sql = 'SELECT ps.price from '._DB_PREFIX_.'product_shop as ps WHERE ps.id_product = '.(int) $product;
         $result = $this->dbConn->fetchColumn($sql);
+
         return $result;
     }
 
-    private function getProductName($product) {
+    private function getProductName($product)
+    {
         $sql = 'SELECT pl.name from '._DB_PREFIX_.'product_lang as pl WHERE pl.id_product = '.(int) $product;
         $result = $this->dbConn->fetchColumn($sql);
+
         return $result;
     }
 
-    private function getProductCat($category) {
+    private function getProductCat($category)
+    {
         $sql = 'SELECT cl.name from '._DB_PREFIX_.'category_lang as cl WHERE cl.id_category = '.(int) $category;
         $result = $this->dbConn->fetchColumn($sql);
+
         return $result;
     }
-
 
     public function onClose(ConnectionInterface $conn)
     {
