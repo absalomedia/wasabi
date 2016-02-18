@@ -382,7 +382,7 @@ class Prestashop implements MessageComponentInterface
          foreach($result as $key => $value)
         {
             $result['orderprice'] = $this->getOrderPrice($product);
-            $result['category_default'] $this->getProductCat($value['cat_id']);
+            $result['category_default'] = $this->getProductCat($value['cat_id']);
         }
         return $result;
     }
