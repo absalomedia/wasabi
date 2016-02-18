@@ -157,11 +157,11 @@ class Prestashop implements MessageComponentInterface
         $specific_price = null;
 
         $combinations['name'] = $row['product_name'];
-        $typcheck = array("id_product", "price", "base_price", "price", "ecotax","weight","quantity","unit_impact","minimal_quantity");
+        $typcheck = array("id_product", "price", "base_price", "price", "ecotax", "weight", "quantity", "unit_impact", "minimal_quantity");
 
         foreach ($typcheck as $key=>$value) 
         { 
-            if ( (strpos($value, 'price') !== false) || (strpos($value, 'weight') !== false) || (strpos($value, 'ecotax') !== false) || (strpos($value, 'impact') !== false) )
+            if ((strpos($value, 'price') !== false) || (strpos($value, 'weight') !== false) || (strpos($value, 'ecotax') !== false) || (strpos($value, 'impact') !== false))
             {
                 $combinations[$value] = (float) $row[$value]; 
             } else {
