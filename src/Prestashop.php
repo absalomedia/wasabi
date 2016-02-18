@@ -161,12 +161,8 @@ class Prestashop implements MessageComponentInterface
 
         foreach ($typcheck as $key=>$value) 
         { 
-            if ((strpos($value, 'price') !== false) || (strpos($value, 'weight') !== false) || (strpos($value, 'ecotax') !== false) || (strpos($value, 'impact') !== false))
-            {
-                $combinations[$value] = (float) $row[$value]; 
-            } else {
-                $combinations[$value] = (int) $row[$value]; 
-            }
+            ((strpos($value, 'price') !== false) || (strpos($value, 'weight') !== false) || (strpos($value, 'ecotax') !== false) || (strpos($value, 'impact') !== false)) ? $combinations[$value] = (float) $row[$value] : $combinations[$value] = (int) $row[$value];
+            
         }
         $combinations['attributes_values'][$row['id_attribute_group']] = $row['attribute_name'];
         $combinations['attributes'][] = (int) $row['id_attribute'];
@@ -214,27 +210,28 @@ class Prestashop implements MessageComponentInterface
      */
     private function getCombination($id_product_attribute)
     {
-        $sql = 'SELECT pl.name as product_name, pa.id_product, ag.id_attribute_group, ag.is_color_group, agl.name AS group_name, agl.public_name AS public_group_name,
-                    a.id_attribute, al.name AS attribute_name, a.color AS attribute_color, pas.id_product_attribute,
-                    IFNULL(stock.quantity, 0) as quantity, pas.price, pas.ecotax, pas.weight,
-                    pas.default_on, pa.reference, pas.unit_price_impact as unit_impact,
-                    pas.minimal_quantity, pas.available_date, ag.group_type
-                FROM '._DB_PREFIX_.'product_attribute pa
+        $sql = 'SELECT ag.`id_attribute_group`, ag.`is_color_group`, agl.`name` AS group_name, agl.`public_name` AS public_group_name,
+                    a.`id_attribute`, al.`name` AS attribute_name, a.`color` AS attribute_color, pas.`id_product_attribute`,
+                    IFNULL(stock.quantity, 0) as quantity, pc.price as base_price, pc.id_product, pas.`price`, pas.`ecotax`, pas.`weight`,
+                    pas.`default_on`, pa.`reference`, pas.`unit_price_impact`, pl.name as product_name,
+                    pas.`minimal_quantity`, pas.`available_date`, ag.`group_type`
+                FROM `'._DB_PREFIX_.'product_attribute` pa
                  INNER JOIN '._DB_PREFIX_.'product_attribute_shop pas
                     ON (pas.id_product_attribute = pa.id_product_attribute AND pas.id_shop = 1)
                  LEFT JOIN '._DB_PREFIX_.'stock_available stock
-                        ON (stock.id_product = pa.id_product AND stock.id_product_attribute = IFNULL(pa.id_product_attribute, 0) AND stock.id_shop = 1  )
-                LEFT JOIN '._DB_PREFIX_.'product_lang pl ON ( pl.id_product = pa.id_product)
-                LEFT JOIN '._DB_PREFIX_.'product_attribute_combination pac ON (pac.id_product_attribute = pa.id_product_attribute)
-                LEFT JOIN '._DB_PREFIX_.'attribute a ON (a.id_attribute = pac.id_attribute)
-                LEFT JOIN '._DB_PREFIX_.'attribute_group ag ON (ag.id_attribute_group = a.id_attribute_group)
-                LEFT JOIN '._DB_PREFIX_.'attribute_lang al ON (a.id_attribute = al.id_attribute)
-                LEFT JOIN '._DB_PREFIX_.'attribute_group_lang agl ON (ag.id_attribute_group = agl.id_attribute_group)
+                        ON (stock.id_product = pa.id_product AND stock.id_product_attribute = IFNULL(`pa`.id_product_attribute, 0) AND stock.id_shop = 1  )
+                LEFT JOIN `'._DB_PREFIX_.'product_attribute_combination` pac ON (pac.`id_product_attribute` = pa.`id_product_attribute`)
+                LEFT JOIN `'._DB_PREFIX_.'product` pc ON (pa.`id_product` = pc.`id_product`)
+                LEFT JOIN `'._DB_PREFIX_.'product_lang` pl ON (pc.`id_product` = pl.`id_product`)
+                LEFT JOIN `'._DB_PREFIX_.'attribute` a ON (a.`id_attribute` = pac.`id_attribute`)
+                LEFT JOIN `'._DB_PREFIX_.'attribute_group` ag ON (ag.`id_attribute_group` = a.`id_attribute_group`)
+                LEFT JOIN `'._DB_PREFIX_.'attribute_lang` al ON (a.`id_attribute` = al.`id_attribute`)
+                LEFT JOIN `'._DB_PREFIX_.'attribute_group_lang` agl ON (ag.`id_attribute_group` = agl.`id_attribute_group`)
                  INNER JOIN '._DB_PREFIX_.'attribute_shop attribute_shop
                     ON (attribute_shop.id_attribute = a.id_attribute AND attribute_shop.id_shop = 1)
-                WHERE pas.id_product_attribute= '.(int) $id_product_attribute.'
+                WHERE pas.`id_product_attribute`= '.(int)$id_product_attribute.'
                 GROUP BY id_attribute_group, id_product_attribute
-                ORDER BY ag.position ASC, a.position ASC, agl.name ASC';
+                ORDER BY ag.`position` ASC, a.`position` ASC, agl.`name` ASC';
 
         $combo_groups = $this->dbConn->fetchRowMany($sql);
 
