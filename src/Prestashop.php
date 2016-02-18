@@ -253,6 +253,7 @@ class Prestashop implements MessageComponentInterface
 
     /**
      * @param null|string $attribute
+     * @param string $product
      */
     private function getStockQuantity($product, $attribute)
     {
@@ -423,6 +424,9 @@ class Prestashop implements MessageComponentInterface
         return $result;
     }
 
+    /**
+     * @param string $product
+     */
     private function getProductName($product)
     {
         $sql = 'SELECT pl.name from '._DB_PREFIX_.'product_lang as pl WHERE pl.id_product = '.(int) $product;
