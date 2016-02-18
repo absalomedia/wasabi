@@ -239,10 +239,10 @@ class Prestashop implements MessageComponentInterface
     }
 
     public function getAttributeBase($attribute) {
-       $sql = ' SELECT al.*
+       $sql = 'SELECT al.*
             FROM '._DB_PREFIX_.'product_attribute_combination pac
             JOIN '._DB_PREFIX_.'attribute_lang al ON (pac.id_attribute = al.id_attribute AND al.id_lang=1)
-            WHERE pac.id_product_attribute='.(int) $attribute);
+            WHERE pac.id_product_attribute='.(int) $attribute;
         $result = $this->dbConn->fetchRowMany($sql);
 
         return $result;
