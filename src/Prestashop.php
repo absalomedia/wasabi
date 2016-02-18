@@ -210,7 +210,7 @@ class Prestashop implements MessageComponentInterface
      */
     private function getCombination($id_product_attribute)
     {
-        $sql = 'SELECT ag.`id_attribute_group`, ag.`is_color_group`, agl.`name` AS group_name, agl.`public_name` AS public_group_name,
+       $sql = 'SELECT ag.`id_attribute_group`, ag.`is_color_group`, agl.`name` AS group_name, agl.`public_name` AS public_group_name,
                     a.`id_attribute`, al.`name` AS attribute_name, a.`color` AS attribute_color, pas.`id_product_attribute`,
                     IFNULL(stock.quantity, 0) as quantity, pc.price as base_price, pc.id_product, pas.`price`, pas.`ecotax`, pas.`weight`,
                     pas.`default_on`, pa.`reference`, pas.`unit_price_impact`, pl.name as product_name,
@@ -236,6 +236,16 @@ class Prestashop implements MessageComponentInterface
         $combo_groups = $this->dbConn->fetchRowMany($sql);
 
         return $combo_groups;
+    }
+
+    public function getAttributeBase($attribute) {
+       $sql = ' SELECT al.*
+            FROM '._DB_PREFIX_.'product_attribute_combination pac
+            JOIN '._DB_PREFIX_.'attribute_lang al ON (pac.id_attribute = al.id_attribute AND al.id_lang=1)
+            WHERE pac.id_product_attribute='.(int) $attribute);
+        $result = $this->dbConn->fetchRowMany($sql);
+
+        return $result;
     }
 
     /**
@@ -353,24 +363,39 @@ class Prestashop implements MessageComponentInterface
      */
     private function getProduct($ids)
     {
-        $sqler = 'SELECT p.id_product, p.id_supplier, p.ean13, p.upc, p.price, p.wholesale_price, p.on_sale, p.quantity, p.id_category_default, 
+        $sql = 'SELECT p.id_product, p.id_supplier, p.ean13, p.upc, p.price, p.wholesale_price, p.on_sale, p.quantity, p.id_category_default, p.id_category_default AS cat_id,
                     p.show_price, p.available_for_order, p.minimal_quantity, p.customizable,
-                    p.out_of_stock, pl.link_rewrite, pl.name, i.id_image, il.legend,
-                    cl.name AS category_default,  cl.id_category AS cat_id, ps.price AS orderprice
+                    p.out_of_stock, pl.link_rewrite, pl.name, i.id_image, il.legend
                     FROM '._DB_PREFIX_.'product as p                 
                     LEFT JOIN '._DB_PREFIX_.'image AS i ON i.id_product = p.id_product 
-                    LEFT JOIN '._DB_PREFIX_.'product_shop as ps ON ps.id_product = p.id_product
-                    LEFT JOIN '._DB_PREFIX_.'product_lang as pl ON pl.id_product = p.id_product
                     LEFT JOIN '._DB_PREFIX_.'image_lang as il ON i.id_image = il.id_image
-                    LEFT JOIN '._DB_PREFIX_.'category_lang cl ON p.id_category_default = cl.id_category
                     WHERE p.id_product IN ('.$ids.')
                     AND i.cover = 1
                     AND p.active = 1
                     GROUP BY p.id_product
                     ORDER BY p.price ASC';
 
-        $result = $this->dbConn->fetchRowMany($sqler);
+        $result = $this->dbConn->fetchRowMany($sql);
 
+        if (is_array($result))
+        {
+         foreach($result as $key => $value)
+        {
+            $result['orderprice'] = $this->getOrderPrice($product);
+            $result['category_default'] $this->getProductCat($value['cat_id']);
+        }
+        return $result;
+    }
+
+    public function getOrderPrice($product) {
+        $sql = 'SELECT ps.price from '._DB_PREFIX_.'product_shop as ps WHERE ps.id_product = '.(int) $product;
+        $result = $this->dbConn->fetchValue($sql);
+        return $result;
+    }
+
+    public function getProductCat($category) {
+        $sql = 'SELECT cl.name from '._DB_PREFIX_.'category_lang as cl WHERE cl.id_category = '.(int) $category;
+        $result = $this->dbConn->fetchValue($sql);
         return $result;
     }
 
