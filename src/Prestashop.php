@@ -29,8 +29,9 @@ class Prestashop implements MessageComponentInterface
     {
         // Store the new connection to send messages to later
         $this->clients->attach($conn);
-
+        if ($conn->resourceId instanceof $conn) {
         Analog::log("New connection: $conn->resourceId");
+        }
     }
 
     public function onMessage(ConnectionInterface $from, $msg)
