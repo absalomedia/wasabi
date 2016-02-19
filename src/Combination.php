@@ -256,5 +256,4 @@ class Combination extends Prestashop
 
         return $result;
     }
-
 }
