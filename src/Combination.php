@@ -119,7 +119,7 @@ class Combination extends Prestashop
                 $combo['base_price'] = (float) Product::getOrderPrice($product);
                 $combo['quantity'] = (int) $this->getStockQuantity($product, $id_product_attribute);
                 $combo['id_product'] = (int) $product;
-                $combo['product_name'] = (int) Product::getProductName($product);
+                $combo['product_name'] = (int) $this->getProductName($product);
                 $pricing = $this->getAttributePricing($id_product_attribute);
                 foreach ($pricing as $ki => $val) {
                     $combo[$ki] = $val;
@@ -245,6 +245,18 @@ class Combination extends Prestashop
         ($image !== false) ? $imager = (int) $image : $imager = -1;
 
         return $imager;
+    }
+
+
+    /**
+     * @param string $product
+     */
+    private function getProductName($product)
+    {
+        $sql = 'SELECT pl.name from '._DB_PREFIX_.'product_lang as pl WHERE pl.id_product = '.(int) $product;
+        $result = $this->dbConn->fetchColumn($sql);
+
+        return $result;
     }
 
 }

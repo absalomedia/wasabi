@@ -97,17 +97,6 @@ class Product extends Prestashop
         return $result;
     }
 
-    /**
-     * @param string $product
-     */
-    private function getProductName($product)
-    {
-        $sql = 'SELECT pl.name from '._DB_PREFIX_.'product_lang as pl WHERE pl.id_product = '.(int) $product;
-        $result = $this->dbConn->fetchColumn($sql);
-
-        return $result;
-    }
-
     private function getProductCat($category)
     {
         $sql = 'SELECT cl.name from '._DB_PREFIX_.'category_lang as cl WHERE cl.id_category = '.(int) $category;
