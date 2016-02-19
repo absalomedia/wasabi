@@ -6,7 +6,7 @@ use Analog\Analog;
 
 class Combination extends Prestashop
 {
-     /**
+    /**
      * @param string $data
      */
     public function getCombinationData($data)
@@ -28,7 +28,6 @@ class Combination extends Prestashop
         return $combinations;
     }
 
-  
     /**
      * @param string $product
      */
@@ -246,5 +245,4 @@ class Combination extends Prestashop
 
         return $imager;
     }
-
 }
