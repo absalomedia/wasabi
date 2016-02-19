@@ -4,12 +4,11 @@ namespace ABM\Wasabi;
 
 use Analog\Analog;
 
-class Cart extends Prestashop 
+class Cart extends Prestashop
 {
-
-        /**
-         * @param string $data
-         */
+    /**
+     * @param string $data
+     */
     private function getCartData($data)
     {
         $cart = substr($data, 0, strpos($data, ','));
@@ -43,5 +42,4 @@ class Cart extends Prestashop
             return $results;
         }
     }
-
 }
