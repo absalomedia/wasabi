@@ -5,7 +5,6 @@ namespace ABM\Wasabi;
 use Analog\Analog;
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
-use ABM\Wasabi\Cart;
 
 class Prestashop implements MessageComponentInterface
 {
