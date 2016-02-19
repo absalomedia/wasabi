@@ -5,6 +5,7 @@ namespace ABM\Wasabi;
 use Analog\Analog;
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
+use ABM\Wasabi\Cart;
 
 class Prestashop implements MessageComponentInterface
 {
@@ -41,7 +42,7 @@ class Prestashop implements MessageComponentInterface
                 $type = strtolower(substr($msg, 0, strpos($msg, '|')));
                 $data = substr($msg, strpos($msg, '|') + 1);
                 switch ($type) {
-                    case 'cart': $result = $this->getCartData($data);
+                    case 'cart': $result = Cart::getCartData($data);
                                     break;
                     case 'prod': $result = $this->getProductData($data);
                                     break;
