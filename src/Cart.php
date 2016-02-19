@@ -3,15 +3,13 @@
 namespace ABM\Wasabi;
 
 use Analog\Analog;
-use Ratchet\ConnectionInterface;
-use Ratchet\MessageComponentInterface;
 
 class Cart extends Prestashop 
 {
 
-	 /**
-     * @param string $data
-     */
+        /**
+         * @param string $data
+         */
     private function getCartData($data)
     {
         $cart = substr($data, 0, strpos($data, ','));
