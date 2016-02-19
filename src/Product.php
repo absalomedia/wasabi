@@ -9,7 +9,7 @@ class Product extends Prestashop
   /**
      * @param string $data
      */
-    private function getProductData($data)
+    public function getProductData($data)
     {
         $category = (int) substr($data, 0, strpos($data, ','));
         if ($category != 0) {

@@ -9,7 +9,7 @@ class Cart extends Prestashop
     /**
      * @param string $data
      */
-    private function getCartData($data)
+    public function getCartData($data)
     {
         $cart = substr($data, 0, strpos($data, ','));
         $cust = substr($data, strpos($data, ',') + 1);

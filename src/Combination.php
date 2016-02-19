@@ -9,7 +9,7 @@ class Combination extends Prestashop
      /**
      * @param string $data
      */
-    private function getCombinationData($data)
+    public function getCombinationData($data)
     {
         $product = substr($data, 0, strpos($data, ','));
         $combinations = [];
