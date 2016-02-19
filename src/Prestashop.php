@@ -78,7 +78,6 @@ class Prestashop implements MessageComponentInterface
         return $combinations;
     }
 
-  
     /**
      * @param string $product
      */
