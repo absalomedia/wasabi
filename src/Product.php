@@ -6,7 +6,7 @@ use Analog\Analog;
 
 class Product extends Prestashop
 {
-  /**
+    /**
      * @param string $data
      */
     public function getProductData($data)
@@ -104,5 +104,4 @@ class Product extends Prestashop
 
         return $result;
     }
-
 }
