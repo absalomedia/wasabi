@@ -43,7 +43,7 @@ class Prestashop implements MessageComponentInterface
                 switch ($type) {
                     case 'cart': $result = Cart::getCartData($data);
                                     break;
-                    case 'prod': $result = $this->getProductData($data);
+                    case 'prod': $result = Product::getProductData($data);
                                     break;
                     case 'comb': $result = $this->getCombinationData($data);
                                     break;
@@ -78,60 +78,7 @@ class Prestashop implements MessageComponentInterface
         return $combinations;
     }
 
-    /**
-     * @param string $data
-     */
-    private function getProductData($data)
-    {
-        $category = (int) substr($data, 0, strpos($data, ','));
-        if ($category != 0) {
-            $products = $this->getProducts($category);
-        } else {
-            $product = substr($data, strpos($data, ',') + 1);
-            $products = $this->getProducts($product);
-        }
-        Analog::log("Product variables: $data");
-
-        return $products;
-    }
-
-    /**
-     * @param string $data
-     */
-    private function getCartData($data)
-    {
-        $cart = substr($data, 0, strpos($data, ','));
-        $cust = substr($data, strpos($data, ',') + 1);
-
-        Analog::log("Cart & customer variables: $data");
-        $otherCarts = $this->processFindCarts($cart, $cust);
-
-        return $otherCarts;
-    }
-
-    /**
-     * @param string $cart
-     * @param string $cust
-     */
-    private function processFindCarts($cart, $cust)
-    {
-        $sql = 'SELECT DISTINCT pc.id_cart as id, DATE_FORMAT(pc.date_upd,"%a %D %b %Y, %l:%i %p") as timer from '._DB_PREFIX_.'cart as pc
-                LEFT JOIN  '._DB_PREFIX_.'cart_product as pcp on pcp.id_cart = pc.id_cart
-                WHERE pc.id_cart NOT IN (SELECT po.id_cart FROM  '._DB_PREFIX_.'orders as po)
-                AND pcp.id_product IS NOT NULL
-                AND pc.id_customer = '.(int) $cust.'
-                AND pc.id_cart != '.(int) $cart.'
-                ORDER BY pc.date_upd DESC
-                LIMIT 10';
-        if ($results = $this->dbConn->fetchRowMany($sql)) {
-            foreach ($results as &$row) {
-                $row['token'] = md5(_COOKIE_KEY_.'recover_cart_'.$row['id']);
-            }
-
-            return $results;
-        }
-    }
-
+  
     /**
      * @param string $product
      */
@@ -219,10 +166,10 @@ class Prestashop implements MessageComponentInterface
 
         if (is_array($combo)) {
             foreach ($combo as $key => $value) {
-                $combo['base_price'] = (float) $this->getOrderPrice($product);
+                $combo['base_price'] = (float) Product::getOrderPrice($product);
                 $combo['quantity'] = (int) $this->getStockQuantity($product, $id_product_attribute);
                 $combo['id_product'] = (int) $product;
-                $combo['product_name'] = (int) $this->getProductName($product);
+                $combo['product_name'] = (int) Product::getProductName($product);
                 $pricing = $this->getAttributePricing($id_product_attribute);
                 foreach ($pricing as $ki => $val) {
                     $combo[$ki] = $val;
@@ -348,99 +295,6 @@ class Prestashop implements MessageComponentInterface
         ($image !== false) ? $imager = (int) $image : $imager = -1;
 
         return $imager;
-    }
-
-    /**
-     * @param string $category
-     */
-    private function getProducts($category)
-    {
-        $product_ids = $this->getProductIDs($category);
-        $products = $this->getProduct($product_ids);
-
-        return $products;
-    }
-
-    /**
-     * @param string $category
-     */
-    private function getProductIDs($category)
-    {
-        $sql = 'SELECT DISTINCT p.id_product
-                from '._DB_PREFIX_.'product as p
-                LEFT JOIN '._DB_PREFIX_.'image AS i ON i.id_product = p.id_product 
-                LEFT JOIN '._DB_PREFIX_.'product_lang as pl ON pl.id_product = p.id_product
-                WHERE p.active = 1
-                AND p.id_category_default = '.(int) $category.'
-                GROUP BY p.id_product';
-        $pcats = $this->dbConn->fetchRowMany($sql);
-        $ids = '';
-        if (is_array($pcats) && (!empty($pcats))) {
-            foreach ($pcats as $row) {
-                $ids .= $row['id_product'].',';
-            }
-        }
-
-        $ids = rtrim($ids, ',');
-
-        return $ids;
-    }
-
-    /**
-     * @param string $ids
-     */
-    private function getProduct($ids)
-    {
-        $sql = 'SELECT p.id_product, p.id_supplier, p.ean13, p.upc, p.price, p.wholesale_price, p.on_sale, p.quantity, p.id_category_default,
-                    p.show_price, p.available_for_order, p.minimal_quantity, p.customizable,
-                    p.out_of_stock, pl.link_rewrite, pl.name, i.id_image, il.legend
-                    FROM '._DB_PREFIX_.'product as p                 
-                    LEFT JOIN '._DB_PREFIX_.'image AS i ON i.id_product = p.id_product 
-                    LEFT JOIN '._DB_PREFIX_.'image_lang as il ON i.id_image = il.id_image
-                    WHERE p.id_product IN ('.$ids.')
-                    AND i.cover = 1
-                    AND p.active = 1
-                    GROUP BY p.id_product
-                    ORDER BY p.price ASC';
-
-        $result = $this->dbConn->fetchRowMany($sql);
-
-        if (is_array($result)) {
-            foreach ($result as $key => $value) {
-                $result['cat_id'] = $value['id_category_default'];
-                $result['orderprice'] = $this->getOrderPrice($value['id_product']);
-                $result['category_default'] = $this->getProductCat($value['id_category_default']);
-            }
-
-            return $result;
-        }
-    }
-
-    private function getOrderPrice($product)
-    {
-        $sql = 'SELECT ps.price from '._DB_PREFIX_.'product_shop as ps WHERE ps.id_product = '.(int) $product;
-        $result = $this->dbConn->fetchColumn($sql);
-
-        return $result;
-    }
-
-    /**
-     * @param string $product
-     */
-    private function getProductName($product)
-    {
-        $sql = 'SELECT pl.name from '._DB_PREFIX_.'product_lang as pl WHERE pl.id_product = '.(int) $product;
-        $result = $this->dbConn->fetchColumn($sql);
-
-        return $result;
-    }
-
-    private function getProductCat($category)
-    {
-        $sql = 'SELECT cl.name from '._DB_PREFIX_.'category_lang as cl WHERE cl.id_category = '.(int) $category;
-        $result = $this->dbConn->fetchColumn($sql);
-
-        return $result;
     }
 
     public function onClose(ConnectionInterface $conn)
