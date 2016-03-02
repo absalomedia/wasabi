@@ -30,7 +30,7 @@ class Prestashop implements MessageComponentInterface
         // Store the new connection to send messages to later
         $this->clients->attach($conn);
         if (resourceId instanceof $conn) {
-        Analog::log("New connection: $conn->resourceId");
+            Analog::log("New connection: $conn->resourceId");
         }
     }
 
@@ -62,7 +62,7 @@ class Prestashop implements MessageComponentInterface
         // The connection is closed, remove it, as we can no longer send it messages
         $this->clients->detach($conn);
         if (resourceId instanceof $conn) {
-        Analog::log('Connection '.$conn->resourceId.' has disconnected');
+            Analog::log('Connection '.$conn->resourceId.' has disconnected');
         }
     }
 
