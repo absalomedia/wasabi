@@ -7,7 +7,7 @@ A Websocket loosely coupled tool for Prestashop carts, products &amp; combinatio
 
 ## What's Wasabi?
 
-Wasabi is a Websocket based tool, built using Composer &amp; Ratchet to expose data on a Prestashop ecommerce build. It's somewhat beta as well so expect gremlins but not dragons. Mostly tested with 1.5.6.x builds but also experimentally tested with 1.6.x. It's somewhat PSR-4 compliant as well. All database related details should be placed inside a .env file in the root directory, increasing security of the app & moving it towards 12 Factor compliance.
+Wasabi is a Websocket based tool, built using Composer &amp; Ratchet to expose data on a Prestashop ecommerce build. It's somewhat beta as well so expect gremlins but not dragons. Mostly tested with 1.5.6.x builds but also experimentally tested with 1.6.x. It's somewhat PSR-4 compliant as well. All database related details should be placed inside a .env file in the root directory, increasing security of the app & moving it towards [12 Factor](https://12factor.net/) compliance.
 
 ## Installation
 
