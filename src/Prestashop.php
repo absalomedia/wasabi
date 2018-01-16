@@ -5,21 +5,26 @@ namespace ABM\Wasabi;
 use Analog\Analog;
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
+use vlucas\phpdotenv;
 
 class Prestashop implements MessageComponentInterface
 {
     protected $clients;
     protected $dbConn;
+    protected $dotenv;
 
     public function __construct()
     {
+        $dotenv = new Dotenv\Dotenv(__DIR__, '../.env');
+        $dotenv->load();
+
         $this->clients = new \SplObjectStorage();
         // Now connect to PS DB using Simplon on Composer
         $this->dbConn = new \Simplon\Mysql\Mysql(
-    '127.0.0.1',
-    _DB_USER_,
-    _DB_PASSWD_,
-    _DB_NAME_
+            getenv('SERVER_IP'),
+            getenv('DB_USER'),
+            getenv('DB_PASS'),
+            getenv('DB_NAME')
         );
         $log_file = 'wasabi.log';
         Analog::handler(\Analog\Handler\File::init($log_file));

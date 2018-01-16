@@ -13,7 +13,8 @@
         "simplon/mysql": "*",
         "codeclimate/php-test-reporter": "*",
         "cboden/ratchet": "*",
-        "analog/analog": "*"
+        "analog/analog": "*",
+        "vlucas/phpdotenv": "*"
     },
     "autoload": {
         "psr-4": {
