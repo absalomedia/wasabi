@@ -25,9 +25,5 @@
     },
   "support": {
     "issues": "https://github.com/absalomedia/wasabi/issues"
-  },
-
-  "replace": {
-    "abm/wasabi": "self.version"
   }
 }
